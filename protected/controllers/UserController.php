@@ -170,4 +170,43 @@ class UserController extends Controller
 			Yii::app()->end();
 		}
 	}
+	public function actionRegister()
+    {
+        $model = new User;
+
+        if (isset($_POST['User'])) {
+            $model->attributes = $_POST['User'];
+            $model->verification_token = md5(uniqid(mt_rand(), true));
+            if ($model->save()) {
+                $verificationUrl = $this->createAbsoluteUrl('user/verify', array('token' => $model->verification_token));
+                Yii::log("Verification URL: $verificationUrl", CLogger::LEVEL_INFO);
+                $this->redirect(array('site/login'));
+            }
+        }
+
+        $this->render('register', array('model' => $model));
+    }
+
+    public function actionVerify($token)
+    {
+        $user = User::model()->findByAttributes(array('verification_token' => $token));
+        if ($user) {
+            $user->is_verified = 1;
+            $user->verification_token = null;
+            if ($user->save(false)) {
+                Yii::app()->user->setFlash('success', 'Your account has been verified.');
+                $this->redirect(array('site/login'));
+            }
+        } else {
+            Yii::app()->user->setFlash('error', 'Invalid verification token.');
+            $this->redirect(array('site/login'));
+        }
+    }
+
+    public function actionAjaxEmailCheck()
+    {
+        $email = Yii::app()->request->getParam('email');
+        $exists = User::model()->exists('email=:email', array(':email' => $email));
+        echo json_encode(!$exists);
+    }
 }

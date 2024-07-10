@@ -12,6 +12,7 @@
  * @property string $created_at
  * @property string $updated_at
  *
+ * 
  * The followings are the available model relations:
  * @property BlogPost[] $blogPosts
  * @property Comment[] $comments
@@ -19,6 +20,8 @@
  */
 class User extends CActiveRecord
 {
+	public $password_repeat;
+
 	/**
 	 * @return string the associated database table name
 	 */
@@ -41,6 +44,10 @@ class User extends CActiveRecord
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
 			array('id, email, password, verification_token, is_verified, created_at, updated_at', 'safe', 'on'=>'search'),
+
+			//custom validation
+			array('email', 'email'),
+			array('email', 'unique'),
 		);
 	}
 
@@ -115,4 +122,17 @@ class User extends CActiveRecord
 	{
 		return parent::model($className);
 	}
+
+	protected function beforeSave()
+    {
+        if (parent::beforeSave()) {
+            if ($this->isNewRecord) {
+                $this->verification_token = md5(uniqid(rand(), true));
+                $this->password = CPasswordHelper::hashPassword($this->password);
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
