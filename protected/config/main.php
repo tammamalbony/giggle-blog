@@ -40,16 +40,15 @@ return array(
 		),
 
 		// uncomment the following to enable URLs in path-format
-		/*
+		
 		'urlManager'=>array(
 			'urlFormat'=>'path',
 			'rules'=>array(
-				'<controller:\w+>/<id:\d+>'=>'<controller>/view',
-				'<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
-				'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
+				'manifest.json' => 'site/manifest',
+    		    'service-worker.js' => 'site/serviceWorker',
 			),
 		),
-		*/
+		
 		'session' => array(
 				'autoStart' => true,
 			),

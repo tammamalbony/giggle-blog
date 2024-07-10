@@ -190,6 +190,7 @@ class UserController extends Controller
 			$user->verification_token = null;
 			if ($user->save(false)) {
 				Yii::app()->user->setFlash('success', 'Your account has been verified.');
+				Yii::app()->user->setState('isVerified', true);
 				$this->redirect(array('site/index'));
 			}
 		} else {

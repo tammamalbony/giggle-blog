@@ -14,7 +14,10 @@ body
 	background: white;
 	border: 1px solid #C9E0ED;
 }
-
+.errorMessage{
+	color:red;
+	font-weight:600;
+}
 #header
 {
 	margin: 0;
@@ -137,7 +140,7 @@ div.view
 
 div.breadcrumbs
 {
-	font-size: 0.9em;
+	font-size: 16px;
 	padding: 5px 20px;
 }
 

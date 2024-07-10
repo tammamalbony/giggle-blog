@@ -48,6 +48,9 @@ class User extends CActiveRecord
 			//custom validation
 			array('email', 'email'),
 			array('username, email', 'unique'),
+
+			array('terms', 'required', 'message' => 'You must agree to the terms and conditions.'),
+            array('terms', 'boolean'),
 			
 		);
 	}
@@ -82,6 +85,7 @@ class User extends CActiveRecord
 			'is_verified' => 'Is Verified',
 			'created_at' => 'Created At',
 			'updated_at' => 'Updated At',
+			'terms' => 'Terms and Conditions',
 		);
 	}
 

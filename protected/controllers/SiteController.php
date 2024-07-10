@@ -114,4 +114,16 @@ class SiteController extends Controller
 		Yii::app()->user->logout();
 		$this->redirect(Yii::app()->homeUrl);
 	}
+
+	public function actionManifest()
+  {
+    header('Content-Type: application/json');
+    readfile(Yii::getPathOfAlias('webroot') . '/manifest.json');
+  }
+
+  public function actionServiceWorker()
+  {
+    header('Content-Type: application/javascript');
+    readfile(Yii::getPathOfAlias('webroot') . '/service-worker.js');
+  }
 }
