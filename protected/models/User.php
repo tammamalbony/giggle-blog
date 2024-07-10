@@ -38,7 +38,7 @@ class User extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('email, password, created_at, updated_at', 'required'),
+			array('username, email, password, password_repeat, first_name, last_name', 'required'),
 			array('is_verified', 'numerical', 'integerOnly'=>true),
 			array('email, password, verification_token', 'length', 'max'=>255),
 			// The following rule is used by search().
@@ -47,7 +47,7 @@ class User extends CActiveRecord
 
 			//custom validation
 			array('email', 'email'),
-			array('email', 'unique'),
+			array('username, email', 'unique'),
 		);
 	}
 
@@ -73,6 +73,9 @@ class User extends CActiveRecord
 		return array(
 			'id' => 'ID',
 			'email' => 'Email',
+			'first_name' => 'First Name',
+            'last_name' => 'Last Name',
+            'username' => 'Username',
 			'password' => 'Password',
 			'verification_token' => 'Verification Token',
 			'is_verified' => 'Is Verified',
@@ -126,13 +129,13 @@ class User extends CActiveRecord
 	protected function beforeSave()
     {
         if (parent::beforeSave()) {
-            if ($this->isNewRecord) {
-                $this->verification_token = md5(uniqid(rand(), true));
-                $this->password = CPasswordHelper::hashPassword($this->password);
-            }
-            return true;
-        } else {
-            return false;
-        }
+			if ($this->isNewRecord) {
+				$this->verification_token = md5(uniqid(rand(), true));
+				$this->password = CPasswordHelper::hashPassword($this->password);
+			}
+			return true;
+		} else {
+			return false;
+		}
     }
 }

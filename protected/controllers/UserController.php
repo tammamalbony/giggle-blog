@@ -27,21 +27,10 @@ class UserController extends Controller
 	public function accessRules()
 	{
 		return array(
-			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('index','view'),
-				'users'=>array('*'),
-			),
-			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update'),
-				'users'=>array('@'),
-			),
-			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('admin','delete'),
-				'users'=>array('admin'),
-			),
-			array('deny',  // deny all users
-				'users'=>array('*'),
-			),
+			array('allow', 'actions'=>array('index','view','register','verify','ajaxEmailCheck'), 'users'=>array('*')),
+			array('allow', 'actions'=>array('create','update'), 'users'=>array('@')),
+			array('allow', 'actions'=>array('admin','delete'), 'users'=>array('admin')),
+			array('deny', 'users'=>array('*')),
 		);
 	}
 
@@ -173,18 +162,18 @@ class UserController extends Controller
 	public function actionRegister()
     {
         $model = new User;
+     	// $this->performAjaxValidation($model);
+		if (isset($_POST['User'])) {
+			$model->attributes = $_POST['User'];
+			$model->verification_token = md5(uniqid(mt_rand(), true));
+			if ($model->save()) {
+				$verificationUrl = $this->createAbsoluteUrl('user/verify', array('token' => $model->verification_token));
+				Yii::log("Verification URL: $verificationUrl", CLogger::LEVEL_INFO);
+				$this->redirect(array('site/login'));
+			}
+		}
 
-        if (isset($_POST['User'])) {
-            $model->attributes = $_POST['User'];
-            $model->verification_token = md5(uniqid(mt_rand(), true));
-            if ($model->save()) {
-                $verificationUrl = $this->createAbsoluteUrl('user/verify', array('token' => $model->verification_token));
-                Yii::log("Verification URL: $verificationUrl", CLogger::LEVEL_INFO);
-                $this->redirect(array('site/login'));
-            }
-        }
-
-        $this->render('register', array('model' => $model));
+		$this->render('register', array('model' => $model));
     }
 
     public function actionVerify($token)
@@ -209,4 +198,10 @@ class UserController extends Controller
         $exists = User::model()->exists('email=:email', array(':email' => $email));
         echo json_encode(!$exists);
     }
+	public function actionAjaxUsernameCheck()
+{
+    $username = $_GET['username'];
+    $exists = User::model()->exists('username=:username', [':username' => $username]);
+    echo CJSON::encode(!$exists);
+}
 }
