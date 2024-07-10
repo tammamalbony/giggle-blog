@@ -7,7 +7,7 @@
 // CWebApplication properties can be configured here.
 return array(
 	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
-	'name'=>'My Web Application',
+	'name'=> $_ENV['APP_NAME'],
 
 	// preloading 'log' component
 	'preload'=>array('log'),
@@ -23,7 +23,7 @@ return array(
 		
 		'gii'=>array(
 			'class'=>'system.gii.GiiModule',
-			'password'=>'u.DHHZjtRdh*bdNY1',
+			'password'=> $_ENV['GII_PASSWORD'],
 			// If removed, Gii defaults to localhost only. Edit carefully to taste.
 			'ipFilters'=>array('127.0.0.1','::1'),
 		),
@@ -36,6 +36,7 @@ return array(
 		'user'=>array(
 			// enable cookie-based authentication
 			'allowAutoLogin'=>true,
+			'loginUrl' => array('user/login'),
 		),
 
 		// uncomment the following to enable URLs in path-format
@@ -59,7 +60,17 @@ return array(
 			// use 'site/error' action to display errors
 			'errorAction'=>YII_DEBUG ? null : 'site/error',
 		),
-
+		'mail' => [
+			'class' => 'application.components.MailComponent',
+			'Host' => $_ENV['MAIL_HOST'],
+			'Username' => $_ENV['MAIL_USERNAME'],
+			'Password' => $_ENV['MAIL_PASSWORD'],
+			'Port' =>  $_ENV['MAIL_PORT'],
+			'SMTPSecure' =>  $_ENV['MAIL_SMTP_SECURE'],
+			'SMTPAuth' => $_ENV['MAIL_SMTP_AUTH'] === 'true',
+			'From' => $_ENV['MAIL_FROM'],
+			'FromName' => $_ENV['APP_NAME'],
+		],
 		'log'=>array(
 			'class'=>'CLogRouter',
 			'routes'=>array(
@@ -82,6 +93,6 @@ return array(
 	// using Yii::app()->params['paramName']
 	'params'=>array(
 		// this is used in contact page
-		'adminEmail'=>'webmaster@example.com',
+		'adminEmail'=> $_ENV['ADMIN_MAIL'],
 	),
 );

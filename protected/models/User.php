@@ -48,6 +48,7 @@ class User extends CActiveRecord
 			//custom validation
 			array('email', 'email'),
 			array('username, email', 'unique'),
+			
 		);
 	}
 

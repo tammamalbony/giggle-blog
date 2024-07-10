@@ -28,7 +28,7 @@ class UserController extends Controller
 	{
 		return array(
 			array('allow', 'actions'=>array('index','view','register','verify','ajaxEmailCheck'), 'users'=>array('*')),
-			array('allow', 'actions'=>array('create','update'), 'users'=>array('@')),
+			array('allow', 'actions'=>array('create','update','verification','resendVerification'), 'users'=>array('@')),
 			array('allow', 'actions'=>array('admin','delete'), 'users'=>array('admin')),
 			array('deny', 'users'=>array('*')),
 		);
@@ -169,7 +169,13 @@ class UserController extends Controller
 			if ($model->save()) {
 				$verificationUrl = $this->createAbsoluteUrl('user/verify', array('token' => $model->verification_token));
 				Yii::log("Verification URL: $verificationUrl", CLogger::LEVEL_INFO);
-				$this->redirect(array('site/login'));
+				$body = "Please click on the following link to verify your account: <a href='{$verificationUrl}'>Verify Account</a>";
+				if (Yii::app()->mail->sendMail($model->email, 'Verify Your Account', $body)) {
+					Yii::app()->user->setFlash('success', 'Thank you for registering. Please check your email to verify your account.');
+					$this->redirect(array('site/login'));
+				} else {
+					Yii::app()->user->setFlash('error', 'Error while sending verification email.');
+				}
 			}
 		}
 
@@ -177,20 +183,47 @@ class UserController extends Controller
     }
 
     public function actionVerify($token)
-    {
-        $user = User::model()->findByAttributes(array('verification_token' => $token));
-        if ($user) {
-            $user->is_verified = 1;
-            $user->verification_token = null;
-            if ($user->save(false)) {
-                Yii::app()->user->setFlash('success', 'Your account has been verified.');
-                $this->redirect(array('site/login'));
-            }
-        } else {
-            Yii::app()->user->setFlash('error', 'Invalid verification token.');
-            $this->redirect(array('site/login'));
-        }
-    }
+	{
+		$user = User::model()->findByAttributes(array('verification_token' => $token));
+		if ($user) {
+			$user->is_verified = 1;
+			$user->verification_token = null;
+			if ($user->save(false)) {
+				Yii::app()->user->setFlash('success', 'Your account has been verified.');
+				$this->redirect(array('site/index'));
+			}
+		} else {
+			Yii::app()->user->setFlash('error', 'Invalid verification token.');
+			$this->redirect(array('user/verification'));
+		}
+	}
+	public function actionVerification()
+	{
+		$this->render('verification');
+	}
+
+	public function actionResendVerification()
+	{
+		$user = User::model()->findByPk(Yii::app()->user->id);
+		if ($user && !$user->is_verified) {
+			$user->verification_token = md5(uniqid(rand(), true)); // Generate a new token
+			if ($user->save(false)) {
+				$verificationUrl = Yii::app()->createAbsoluteUrl('user/verify', ['token' => $user->verification_token]);
+				$body = "Please click on the following link to verify your account: <a href='{$verificationUrl}'>Verify Account</a>";
+				if (Yii::app()->mail->sendMail($user->email, 'Verify Your Account', $body)) {
+					Yii::app()->user->setFlash('success', 'A new verification email has been sent to your email address.');
+				} else {
+					Yii::app()->user->setFlash('error', 'Error while sending verification email.');
+				}
+			} else {
+				Yii::app()->user->setFlash('error', 'Error while generating new verification token.');
+			}
+		} else {
+			Yii::app()->user->setFlash('error', 'Your account is already verified or user not found.');
+		}
+
+		$this->redirect(array('user/verification'));
+	}
 
     public function actionAjaxEmailCheck()
     {
@@ -199,9 +232,11 @@ class UserController extends Controller
         echo json_encode(!$exists);
     }
 	public function actionAjaxUsernameCheck()
-{
-    $username = $_GET['username'];
-    $exists = User::model()->exists('username=:username', [':username' => $username]);
-    echo CJSON::encode(!$exists);
-}
+	{
+		$username = $_GET['username'];
+		$exists = User::model()->exists('username=:username', [':username' => $username]);
+		echo CJSON::encode(!$exists);
+	}
+
+
 }

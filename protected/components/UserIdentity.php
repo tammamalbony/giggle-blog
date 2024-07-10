@@ -8,6 +8,7 @@
 class UserIdentity extends CUserIdentity
 {
 	private $_id;
+	private $_isVerified;
 	/**
 	 * Authenticates a user.
 	 * The example implementation makes sure if the username and password
@@ -25,6 +26,8 @@ class UserIdentity extends CUserIdentity
             $this->errorCode = self::ERROR_PASSWORD_INVALID;
         } else {
             $this->_id = $record->id;
+			$this->_isVerified = $record->is_verified == 1;
+            Yii::app()->user->setState('isVerified', $this->_isVerified);
             $this->errorCode = self::ERROR_NONE;
         }
         return !$this->errorCode;
@@ -33,5 +36,9 @@ class UserIdentity extends CUserIdentity
 	public function getId()
     {
         return $this->_id;
+    }
+	public function getIsVerified()
+    {
+        return $this->_isVerified;
     }
 }

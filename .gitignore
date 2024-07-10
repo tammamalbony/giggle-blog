@@ -1,5 +1,6 @@
 # Composer dependency directory
 /vendor/
+/protected/vendor/
 /protected/runtime/
 /protected/data/testdrive.db
 
