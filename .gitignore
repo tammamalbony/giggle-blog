@@ -1,1 +1,74 @@
-/vendor
+# Composer dependency directory
+/vendor/
+/protected/runtime/
+/protected/data/testdrive.db
+
+# Yii specific files
+/protected/config/database.php
+
+# Composer files
+composer.lock
+
+# Node modules (if using Node.js)
+/node_modules/
+
+# Mac OS specific files
+.DS_Store
+
+# Windows specific files
+Thumbs.db
+
+# IDE specific files
+/.idea
+*.sublime-project
+*.sublime-workspace
+*.vscode
+
+# Log files
+*.log
+/protected/runtime/*.log
+
+# Backup files
+*.bak
+
+# Environment files
+.env
+
+# Ignore all the assets generated folders
+assets/*
+
+# Keep some directories
+!.gitignore
+!assets/.gitignore
+!protected/.gitignore
+!protected/runtime/.gitignore
+
+# Ignore Yii generated assets
+/assets/*.css
+/assets/*.js
+/assets/*.png
+/assets/*.gif
+/assets/*.jpg
+/assets/*.jpeg
+/assets/*.map
+
+# Ignoring the gii generated code
+/protected/runtime/gii-*
+
+# User uploaded content
+/images/*
+!images/.gitignore
+
+# Ignore PHPUnit test results
+/tests/_output
+
+# Temporary files
+*.tmp
+*.swp
+
+# Node JS specific files
+npm-debug.log
+yarn-error.log
+
+# Coverage results
+/coverage/
