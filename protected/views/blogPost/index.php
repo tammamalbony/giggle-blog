@@ -8,31 +8,29 @@ $this->breadcrumbs = array(
 	'Blog Posts',
 );
 
-$this->menu = array(
-	array('label' => 'Create BlogPost', 'url' => array('create')),
-	array('label' => 'Manage BlogPost', 'url' => array('admin')),
-);
 ?>
 
 <h1>Blog Posts</h1>
 
 <div class="container-fluid controls_filters" style="margin-top: 50px;">
+
 	<div class="row">
-		<div class="col-md-2 col-sm-3 col-6 justify-content-start my-1 d-none d-md-flex">
+		<div class=" justify-content-start my-1 d-none d-md-flex">
 			<h2 class="textGM mx-2">Posts</h2>
 		</div>
-		<div class="col-md-10 col-sm-9 col-12 d-flex justify-content-end my-1">
+		<div class="d-flex justify-content-end my-1 max-w-100vw">
 			<form action="<?php echo Yii::app()->createUrl('blogPost/index'); ?>" method="GET"
 				class="container-fluid d-block filter-form">
 				<div class="row">
-					<div class="input-group flex-nowrap SearchInput px-0">
-						<input type="text" name="q" class="form-control" id="SearchInput" placeholder="Search"
-							value="<?php echo CHtml::encode(Yii::app()->request->getParam('q')); ?>">
-						<button type="submit" class="btn btn-outline-secondary"><i
-								class="bi bi-search textGM"></i></button>
-					</div>
 
 					<div class="col-custom">
+						<div class="input-group flex-nowrap SearchInput px-0">
+							<input type="text" name="q" class="form-control" id="SearchInput" placeholder="Search"
+								value="<?php echo CHtml::encode(Yii::app()->request->getParam('q')); ?>">
+							<button type="submit" class="btn btn-outline-secondary"><i
+									class="bi bi-search textGM"></i></button>
+						</div>
+
 						<select name="author_id" class="form-control mx-2">
 							<option value="">Select Author</option>
 							<?php foreach ($authors as $author): ?>
@@ -92,48 +90,48 @@ $this->menu = array(
 	); ?>
 </div>
 <script>
-$(document).ready(function () {
-    $('.favBtn').on('click', function (event) {
-        event.preventDefault();
-        var postId = $(this).data('id');
-        var btn = $(this);
+	$(document).ready(function () {
+		$('.favBtn').on('click', function (event) {
+			event.preventDefault();
+			var postId = $(this).data('id');
+			var btn = $(this);
 
-        $.ajax({
-            url: '<?php echo Yii::app()->createUrl("like/toggle"); ?>',
-            type: 'POST',
-            data: { post_id: postId },
-            success: function (response) {
-                response = JSON.parse(response);
-                if (response.success) {
-                    btn.toggleClass('btn-outline-primary btn-primary');
-                    btn.find('i').toggleClass('bi-hand-thumbs-up bi-hand-thumbs-down');
-                    // Update like count
-                    var likeCountElement = btn.closest('.card').find('.like-count');
-                    likeCountElement.text(response.likeCount);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: response.message,
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                } else {
-                    console.log(response.errors);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: response.message,
-                    });
-                }
-            },
-            error: function () {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'An unexpected error occurred. Please try again.',
-                });
-            }
-        });
-    });
-});
+			$.ajax({
+				url: '<?php echo Yii::app()->createUrl("like/toggle"); ?>',
+				type: 'POST',
+				data: { post_id: postId },
+				success: function (response) {
+					response = JSON.parse(response);
+					if (response.success) {
+						btn.toggleClass('btn-outline-primary btn-primary');
+						btn.find('i').toggleClass('bi-hand-thumbs-up bi-hand-thumbs-down');
+						// Update like count
+						var likeCountElement = btn.closest('.card').find('.like-count');
+						likeCountElement.text(response.likeCount);
+						Swal.fire({
+							icon: 'success',
+							title: 'Success',
+							text: response.message,
+							showConfirmButton: false,
+							timer: 1500
+						});
+					} else {
+						console.log(response.errors);
+						Swal.fire({
+							icon: 'error',
+							title: 'Error',
+							text: response.message,
+						});
+					}
+				},
+				error: function () {
+					Swal.fire({
+						icon: 'error',
+						title: 'Error',
+						text: 'An unexpected error occurred. Please try again.',
+					});
+				}
+			});
+		});
+	});
 </script>

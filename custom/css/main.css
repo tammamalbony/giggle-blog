@@ -256,6 +256,8 @@ section {
   height: 90px;
   position: fixed !important;
   border-bottom: 1px solid #fff;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 @media (max-width: 575px) {

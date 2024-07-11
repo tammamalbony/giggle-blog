@@ -60,7 +60,7 @@
 
 <body class="section2-bg">
 	<header id="header" class="header fixed-top d-flex align-items-center">
-		<div class="container d-flex align-items-center justify-content-between">
+		<div class="container-fluid d-flex align-items-center justify-content-between">
 
 			<a href="<?php echo Yii::app()->createUrl('site/index'); ?>"
 				class="logo d-flex align-items-center me-auto me-lg-0">
@@ -97,7 +97,10 @@
 								<?php if (!Yii::app()->user->isGuest && Yii::app()->user->getState('isVerified')) { ?>
 									<li><a href="<?php echo Yii::app()->createUrl('blogPost/admin'); ?>"><img
 												src="<?php echo Yii::app()->request->baseUrl; ?>/custom/img/s1/i4.png"
-												class="icon_image" alt="My Posts">My Posts</a></li>
+												class="icon_image" alt="Mange Posts">Dashboard</a></li>
+									<li><a href="<?php echo Yii::app()->createUrl('blogPost/create'); ?>"><img
+												src="<?php echo Yii::app()->request->baseUrl; ?>/custom/img/s1/i1.png"
+												class="icon_image" alt="Create New Posts">Create New Post</a></li>
 								<?php } ?>
 								<li><a href="<?php echo Yii::app()->createUrl('site/logout'); ?>"><img
 											src="<?php echo Yii::app()->request->baseUrl; ?>/custom/img/s1/i2.png"

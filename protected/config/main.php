@@ -46,6 +46,7 @@ return array(
 			'rules'=>array(
 				'manifest.json' => 'site/manifest',
     		    'service-worker.js' => 'site/serviceWorker',
+				'blogPost/toggleVisibility' => 'blogPost/toggleVisibility',
 			),
 		),
 		
