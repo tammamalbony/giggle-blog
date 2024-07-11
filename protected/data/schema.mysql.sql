@@ -101,3 +101,19 @@ INSERT INTO `blog_post` (`author_id`, `category_id`, `title`, `description`, `co
 
 -- Set the post with id 2 as private
 UPDATE `blog_post` SET `visibility` = 0 WHERE `id` = 2;
+
+-- Insert demo likes
+INSERT INTO `like` (`post_id`, `user_id`, `created_at`) VALUES
+(1, 1, CURRENT_TIMESTAMP),
+(1, 2, CURRENT_TIMESTAMP),
+(3, 1, CURRENT_TIMESTAMP),
+(4, 1, CURRENT_TIMESTAMP),
+(5, 2, CURRENT_TIMESTAMP);
+
+-- Insert demo comments
+INSERT INTO `comment` (`post_id`, `author_id`, `content`, `created_at`) VALUES
+(1, 1, 'Great tips on skin care!', CURRENT_TIMESTAMP),
+(1, 2, 'Very useful information.', CURRENT_TIMESTAMP),
+(3, 1, 'I loved the book recommendations.', CURRENT_TIMESTAMP),
+(4, 2, 'Thanks for the insights!', CURRENT_TIMESTAMP),
+(5, 3, 'These songs are amazing.', CURRENT_TIMESTAMP);

@@ -54,7 +54,7 @@ class BlogPost extends CActiveRecord
 			'author' => array(self::BELONGS_TO, 'User', 'author_id'),
 			'comments' => array(self::HAS_MANY, 'Comment', 'post_id'),
 			'likes' => array(self::HAS_MANY, 'Like', 'post_id'),
-			'category' => array(self::BELONGS_TO, 'Category', 'category_id'), 
+			'category' => array(self::BELONGS_TO, 'Category', 'category_id'),
 		);
 	}
 
@@ -91,20 +91,21 @@ class BlogPost extends CActiveRecord
 	{
 		// @todo Please modify the following code to remove attributes that should not be searched.
 
-		$criteria=new CDbCriteria;
+		$criteria = new CDbCriteria;
 
-		$criteria->compare('id',$this->id);
-		$criteria->compare('author_id',$this->author_id);
-		$criteria->compare('title',$this->title,true);
-		$criteria->compare('description',$this->description,true);
-		$criteria->compare('content',$this->content,true);
-		$criteria->compare('visibility',$this->visibility);
-		$criteria->compare('created_at',$this->created_at,true);
-		$criteria->compare('updated_at',$this->updated_at,true);
+		$criteria->compare('id', $this->id);
+		$criteria->compare('author_id', $this->author_id);
+		$criteria->compare('title', $this->title, true);
+		$criteria->compare('description', $this->description, true);
+		$criteria->compare('content', $this->content, true);
+		$criteria->compare('visibility', $this->visibility);
+		$criteria->compare('created_at', $this->created_at, true);
+		$criteria->compare('updated_at', $this->updated_at, true);
 
 		return new CActiveDataProvider($this, array(
-			'criteria'=>$criteria,
-		));
+			'criteria' => $criteria,
+		)
+		);
 	}
 
 	/**
@@ -113,8 +114,51 @@ class BlogPost extends CActiveRecord
 	 * @param string $className active record class name.
 	 * @return BlogPost the static model class
 	 */
-	public static function model($className=__CLASS__)
+	public static function model($className = __CLASS__)
 	{
 		return parent::model($className);
 	}
+
+	/**
+	 * Summary of getCommentCount
+	 * 
+	 *  Check if the current Comments Count  at this post.
+	 * 
+	 * @return mixed
+	 */
+	public function getCommentCount()
+	{
+		return Comment::model()->countByAttributes(array('post_id' => $this->id));
+	}
+
+	/**
+	 * Summary of getLikeCount
+	 * 
+	 * Check if the current Likes Count  at this post.
+	 * 
+	 * @return mixed
+	 */
+	public function getLikeCount()
+	{
+		return Like::model()->countByAttributes(array('post_id' => $this->id));
+	}
+
+
+	/**
+     * Check if the current user has liked this post.
+     *
+     * @return boolean True if the current user has liked this post, false otherwise.
+     */
+    public function isLikedByCurrentUser()
+    {
+        if (Yii::app()->user->isGuest) {
+            return false;
+        }
+
+        $userId = Yii::app()->user->id;
+        $like = Like::model()->findByAttributes(array('post_id' => $this->id, 'user_id' => $userId));
+
+        return $like !== null;
+    }
+
 }

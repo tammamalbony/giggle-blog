@@ -76,8 +76,11 @@
 					<li><a href="<?php echo Yii::app()->createUrl('site/index'); ?>" class="ActiveNavIteam">Home</a>
 					</li>
 
-					<?php if (!Yii::app()->user->isGuest && Yii::app()->user->getState('isVerified')) { ?>
+					<?php if (!Yii::app()->user->isGuest) { ?>
 						<li><a href="<?php echo Yii::app()->createUrl('blogPost/index'); ?>">Blog</a></li>
+					<?php } ?>
+					<?php if (!Yii::app()->user->isGuest && Yii::app()->user->getState('isVerified')) { ?>
+						<li><a href="<?php echo Yii::app()->createUrl('blogPost/myposts'); ?>">My Posts</a></li>
 					<?php } ?>
 					<?php if (!Yii::app()->user->isGuest) { ?>
 						<li class="dropdown"><a href="#"><img

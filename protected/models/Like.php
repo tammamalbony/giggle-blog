@@ -36,6 +36,7 @@ class Like extends CActiveRecord
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
 			array('id, post_id, user_id, created_at', 'safe', 'on'=>'search'),
+			array('created_at', 'default', 'value' => new CDbExpression('NOW()'), 'setOnEmpty' => false, 'on' => 'insert'),
 		);
 	}
 
