@@ -43,7 +43,8 @@
 		rel="stylesheet">
 	<link href="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/swiper/swiper-bundle.min.css"
 		rel="stylesheet">
-
+	<link href="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/sweetAlert2/sweetalert2.min.css"
+		rel="stylesheet">
 
 	<!-- <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/main.css"> -->
 	<!-- <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/form.css"> -->
@@ -54,6 +55,7 @@
 
 	<link rel="manifest" href="/manifest.json">
 	<title><?php echo CHtml::encode($this->pageTitle); ?></title>
+
 </head>
 
 <body class="section2-bg">
@@ -64,13 +66,17 @@
 				class="logo d-flex align-items-center me-auto me-lg-0">
 				<img src="<?php echo Yii::app()->request->baseUrl; ?>/custom/img/logoB.png" alt="Giggle Logo">
 			</a>
-
+			<?php if (Yii::app()->user->hasFlash('error')): ?>
+				<div class="alert alert-danger">
+					<?php echo Yii::app()->user->getFlash('error'); ?>
+				</div>
+			<?php endif; ?>
 			<nav id="navbar" class="navbar">
 				<ul>
 					<li><a href="<?php echo Yii::app()->createUrl('site/index'); ?>" class="ActiveNavIteam">Home</a>
 					</li>
 
-					<?php if (!Yii::app()->user->isGuest && !Yii::app()->user->getState('isVerified')) { ?>
+					<?php if (!Yii::app()->user->isGuest && Yii::app()->user->getState('isVerified')) { ?>
 						<li><a href="<?php echo Yii::app()->createUrl('blogPost/index'); ?>">Blog</a></li>
 					<?php } ?>
 					<?php if (!Yii::app()->user->isGuest) { ?>
@@ -85,26 +91,26 @@
 												src="<?php echo Yii::app()->request->baseUrl; ?>/custom/img/s1/i1.png"
 												class="icon_image" alt="Verify">Verify Account</a></li>
 								<?php } ?>
-								<?php if (!Yii::app()->user->isGuest && !Yii::app()->user->getState('isVerified')) { ?>
+								<?php if (!Yii::app()->user->isGuest && Yii::app()->user->getState('isVerified')) { ?>
 									<li><a href="<?php echo Yii::app()->createUrl('blogPost/admin'); ?>"><img
 												src="<?php echo Yii::app()->request->baseUrl; ?>/custom/img/s1/i4.png"
 												class="icon_image" alt="My Posts">My Posts</a></li>
 								<?php } ?>
 								<li><a href="<?php echo Yii::app()->createUrl('site/logout'); ?>"><img
-											src="<?php echo Yii::app()->request->baseUrl; ?>/custom/img/s1/i3.png"
+											src="<?php echo Yii::app()->request->baseUrl; ?>/custom/img/s1/i2.png"
 											class="icon_image"
 											alt="Logout"><?php echo 'Logout (' . Yii::app()->user->name . ')' ?></a></li>
 							</ul>
 						</li>
 						<?php if (Yii::app()->user->isGuest) { ?>
-				<a class="btn-book-a-tabled-block d-md-none w-50" href="<?php echo Yii::app()->createUrl('site/login'); ?>"
-					id="loginLink">Login</a>
+							<a class="btn-book-a-tabled-block d-md-none w-50"
+								href="<?php echo Yii::app()->createUrl('site/login'); ?>" id="loginLink">Login</a>
 
-			<?php } else { ?>
-				<a class="btn-book-a-tabled-block d-md-none w-50"
-					href="<?php echo Yii::app()->createUrl('site/logout'); ?>"><?php echo 'Logout (' . Yii::app()->user->name . ')' ?></a>
+						<?php } else { ?>
+							<a class="btn-book-a-tabled-block d-md-none w-50"
+								href="<?php echo Yii::app()->createUrl('site/logout'); ?>"><?php echo 'Logout (' . Yii::app()->user->name . ')' ?></a>
 
-			<?php } ?>
+						<?php } ?>
 					</ul>
 				<?php } else { ?>
 					<li><a href="<?php echo Yii::app()->createUrl('site/login'); ?>">Login</a></li>
@@ -216,6 +222,7 @@
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/purecounter/purecounter_vanilla.js"></script>
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/swiper/swiper-bundle.min.js"></script>
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/php-email-form/validate.js"></script>
+	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/sweetAlert2/sweetalert2.all.min.js"></script>
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/js/main.js"></script>
 
 </body>

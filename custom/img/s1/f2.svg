@@ -7,15 +7,15 @@
     <defs>
         <radialGradient id="paint0_radial_84_1254" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
             gradientTransform="translate(-86.5341 2.72797e-05) rotate(39.5461) scale(817.166 2113.13)">
-            <stop stop-color="#946DF8" />
-            <stop offset="0.385417" stop-color="#BA75D2" />
-            <stop offset="1" stop-color="#EE8C8D" />
+            <stop stop-color="#0f6e53" />
+            <stop offset="0.385417" stop-color="#1d8f63" />
+            <stop offset="1" stop-color="#9ee529" />
         </radialGradient>
         <radialGradient id="paint1_radial_84_1254" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
             gradientTransform="translate(-331 -91.642) rotate(59.6831) scale(773.038 1774.21)">
-            <stop stop-color="#946DF8" />
-            <stop offset="0.385417" stop-color="#BA75D2" />
-            <stop offset="1" stop-color="#EE8C8D" />
+                <stop stop-color="#fcca3f" />
+            <stop offset="0.385417" stop-color="#f2aa44" />
+            <stop offset="1" stop-color="#cf3a55" />
         </radialGradient>
     </defs>
 </svg>

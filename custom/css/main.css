@@ -11,7 +11,7 @@
   --text-main: #1A2634;
   --g-primery: linear-gradient(90deg, #9ee529 0%, #45a64e 100%);
   --g-v-primery: linear-gradient(270deg, #9ee529 0%, #45a64e 100%);
-  --g-nav:linear-gradient(268.93deg, #9ee529 0.82%, rgb(205 206 205 / 0%) 112.85%);
+  --g-nav: linear-gradient(268.93deg, #9ee529 0.82%, rgb(205 206 205 / 0%) 112.85%);
   --g-hero: linear-gradient(268.93deg, #9ee529 0.82%, rgb(35 164 15 / 0%) 112.85%);
 }
 
@@ -34,12 +34,14 @@ a {
   color: var(--color-primary);
   text-decoration: none;
 }
-.btn.btn-primary{
-  background-color:#4eac4a;
-  font-weight:bold;
-  border-radius:100rem;
-  border-color:#069352;
+
+.btn.btn-primary {
+  background-color: #4eac4a;
+  font-weight: bold;
+  border-radius: 100rem;
+  border-color: #069352;
 }
+
 a:hover {
   color: #dd6350;
   text-decoration: none;
@@ -1288,7 +1290,7 @@ section {
   color: var(--color-primary);
 }
 
-.hero h3  {
+.hero h3 {
   font-size: 52px;
   margin-bottom: 3rem;
 }
@@ -1353,18 +1355,24 @@ section {
   }
 }
 
+.errorMessage {
+  color: red;
+  font-size: 16px;
+  font-weight: 600;
+}
+
 /*--------------------------------------------------------------
 # Footer
 --------------------------------------------------------------*/
 .footer {
   font-size: 14px;
   background-color: #1f1f24;
-  padding: 50px 0;
+  /* padding: 50px 0; */
   color: rgba(255, 255, 255, 0.7);
 }
 
 .footer img {
- max-width:30vw;
+  max-width: 30vw;
 }
 
 .footer .icon {
@@ -1445,4 +1453,52 @@ section {
 
 .footer .credits a {
   color: #fff;
+}
+
+
+.is-invalid+.invalid-feedback,
+.is-invalid~.invalid-feedback {
+  display: block;
+}
+
+.loading-btn {
+  position: relative;
+  pointer-events: none;
+  animation: spin 0.6s linear infinite;
+  background-color: transparent;
+  background-image: linear-gradient(268.93deg, #9ee529 0.82%, #00ffa6 112.85%);
+}
+
+/* Spinner animation */
+@keyframes spin {
+  0% {
+    background-image: linear-gradient(268.93deg,#2bff00  0.82%, #00ffa6  112.85%);
+  }
+  50% {
+    background-image: rotate(360deg);
+  }
+  100%{
+    background-image: linear-gradient(268.93deg, #9ee529 0.82%, #00ffa6 112.85%);
+  }
+}
+
+
+.password-container {
+  position: relative;
+}
+
+.password-container input{
+  padding-left:30px
+}
+.password-container .input-group-addon {
+  cursor: pointer;
+}
+
+.password-container .input-group-addon img{
+  margin-top: -22px;
+  margin-left: 10px;
+  float: left;
+}
+.password-container .input-group-addon img.eye-open{
+  margin-top:-25px !important;
 }

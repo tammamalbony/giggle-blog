@@ -40,17 +40,23 @@ $this->breadcrumbs=array(
                 <?php echo $form->error($model, 'username'); ?>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3 password-container">
                 <div class="d-flex justify-content-between">
                     <?php echo $form->labelEx($model, 'password', array('class' => 'form-label')); ?>
                     <a href="forgetpassword.html"><u>Forgot Password?</u></a>
                 </div>
-                <?php echo $form->passwordField($model, 'password', array('class' => 'form-control', 'placeholder' => 'Password')); ?>
+                <?php echo $form->passwordField($model, 'password', array('class' => 'form-control  password-control', 'placeholder' => 'Password')); ?>
+                <div class="input-group-addon">
+                    <a class="btn-pass">
+                        <img src="/custom/img/s1/eye.svg" alt="" class="eye-close">
+                        <img src="/custom/img/s1/eyeopen.svg" alt="" class="eye-open d-none">
+                    </a>
+                </div>
                 <?php echo $form->error($model, 'password'); ?>
             </div>
 
             <div class="row rememberMe mb-3">
-                <div class="col">
+                <div class="col d-flex  justify-content-center align-items-center">
                     <?php echo $form->checkBox($model, 'rememberMe'); ?>
                     <?php echo $form->label($model, 'rememberMe'); ?>
                     <?php echo $form->error($model, 'rememberMe'); ?>
@@ -75,3 +81,28 @@ $this->breadcrumbs=array(
         </div>
     </div>
 </div>
+
+<script>
+     document.addEventListener('DOMContentLoaded', function () {
+        var form = document.querySelector('.needs-validation');
+
+        const toggleLinks = document.querySelectorAll('.password-container .input-group-addon .btn-pass');
+        toggleLinks.forEach(toggle => {
+            toggle.addEventListener('click', function (e) {
+                e.preventDefault();
+                var passwordInput = this.closest('.password-container').querySelector('.password-control');
+                var eyeOpen = this.querySelector('.eye-open');
+                var eyeClose = this.querySelector('.eye-close');
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    eyeOpen.classList.remove('d-none');
+                    eyeClose.classList.add('d-none');
+                } else {
+                    passwordInput.type = 'password';
+                    eyeOpen.classList.add('d-none');
+                    eyeClose.classList.remove('d-none');
+                }
+            });
+        });
+    });
+</script>

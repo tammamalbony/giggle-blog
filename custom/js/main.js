@@ -84,8 +84,11 @@ document.addEventListener('DOMContentLoaded', () => {
         this.nextElementSibling.classList.toggle('dropdown-active');
 
         let dropDownIndicator = this.querySelector('.dropdown-indicator');
-        dropDownIndicator.classList.toggle('bi-chevron-up');
-        dropDownIndicator.classList.toggle('bi-chevron-down');
+        if(dropDownIndicator){
+           dropDownIndicator.classList.toggle('bi-chevron-up');
+           dropDownIndicator.classList.toggle('bi-chevron-down');
+        }
+   
       }
     })
   });
@@ -220,12 +223,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   var btnlinknav = document.getElementById("loginLink");
-  if(btnlinknav){
+  if (btnlinknav) {
     btnlinknav.addEventListener("click", handleLoginClick);
   }
+
   function handleLoginClick(event) {
     event.preventDefault();
     opensigninPopup("/index.php/site/login", "sign In")
   }
-
+ 
+  
 });

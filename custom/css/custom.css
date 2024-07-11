@@ -161,6 +161,7 @@ footer {
     background-position: bottom left;
     background-repeat: no-repeat;
     background-size: initial;
+    /* color: #f2aa44; */
 }
 
 .footerright {
@@ -575,7 +576,9 @@ input {
     width: -webkit-fill-available !important;
     max-width: none !important;
   }
-
+#LoginForm_rememberMe{
+    max-width:15px !important;
+}
   svg text {cursor: pointer;}
 
   .swiper-wrapper{
