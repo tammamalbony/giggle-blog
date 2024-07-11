@@ -33,18 +33,15 @@ class BlogPost extends CActiveRecord
 	 */
 	public function rules()
 	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
 		return array(
-			array('author_id, title, created_at, updated_at', 'required'),
-			array('author_id, visibility', 'numerical', 'integerOnly'=>true),
-			array('title', 'length', 'max'=>255),
-			array('description, content', 'safe'),
-			// The following rule is used by search().
-			// @todo Please remove those attributes that should not be searched.
-			array('id, author_id, title, description, content, visibility, created_at, updated_at', 'safe', 'on'=>'search'),
+			array('title, content, category_id', 'required'),
+			array('category_id, visibility', 'numerical', 'integerOnly' => true),
+			array('title, image, cover_image', 'length', 'max' => 255),
+			array('description', 'safe'),
+			array('id, author_id, title, description, content, category_id, visibility, image, cover_image, created_at, updated_at', 'safe', 'on' => 'search'),
 		);
 	}
+
 
 	/**
 	 * @return array relational rules.
@@ -57,6 +54,7 @@ class BlogPost extends CActiveRecord
 			'author' => array(self::BELONGS_TO, 'User', 'author_id'),
 			'comments' => array(self::HAS_MANY, 'Comment', 'post_id'),
 			'likes' => array(self::HAS_MANY, 'Like', 'post_id'),
+			'category' => array(self::BELONGS_TO, 'Category', 'category_id'), 
 		);
 	}
 

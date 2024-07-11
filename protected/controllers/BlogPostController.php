@@ -6,7 +6,7 @@ class BlogPostController extends Controller
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
 	 * using two-column layout. See 'protected/views/layouts/column2.php'.
 	 */
-	public $layout='//layouts/column2';
+	public $layout = '//layouts/main';
 
 	/**
 	 * @return array action filters
@@ -15,7 +15,7 @@ class BlogPostController extends Controller
 	{
 		return array(
 			'accessControl', // perform access control for CRUD operations
-			'postOnly + delete', // we only allow deletion via POST request
+			// 'postOnly + delete', // we only allow deletion via POST request
 		);
 	}
 
@@ -27,20 +27,20 @@ class BlogPostController extends Controller
 	public function accessRules()
 	{
 		return array(
-			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('index','view'),
-				'users'=>array('*'),
+			array(
+				'allow',  // allow all users to perform 'index' and 'view' actions
+				'actions' => array('index', 'view'),
+				'users' => array('*'),
 			),
-			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update'),
-				'users'=>array('@'),
+			array(
+				'allow', // allow authenticated user to perform 'admin', 'create', 'update', 'delete' actions
+				'actions' => array('admin', 'create', 'update', 'delete', 'viewPrivate'),
+				'users' => array('@'),
+				'expression' => '$user->getState("isVerified") == 1', // Only allow verified users
 			),
-			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('admin','delete'),
-				'users'=>array('admin'),
-			),
-			array('deny',  // deny all users
-				'users'=>array('*'),
+			array(
+				'deny',  // deny all users
+				'users' => array('*'),
 			),
 		);
 	}
@@ -51,9 +51,26 @@ class BlogPostController extends Controller
 	 */
 	public function actionView($id)
 	{
-		$this->render('view',array(
-			'model'=>$this->loadModel($id),
-		));
+		$this->render(
+			'view',
+			array(
+				'model' => $this->loadModel($id),
+			)
+		);
+	}
+
+	/**
+	 * Displays a private model.
+	 * @param integer $id the ID of the model to be displayed
+	 */
+	public function actionViewPrivate($id)
+	{
+		$this->render(
+			'viewPrivate',
+			array(
+				'model' => $this->loadModel($id),
+			)
+		);
 	}
 
 	/**
@@ -62,21 +79,25 @@ class BlogPostController extends Controller
 	 */
 	public function actionCreate()
 	{
-		$model=new BlogPost;
+		$model = new BlogPost;
 
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
-
-		if(isset($_POST['BlogPost']))
-		{
-			$model->attributes=$_POST['BlogPost'];
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
+		if (isset($_POST['BlogPost'])) {
+			$model->attributes = $_POST['BlogPost'];
+			$model->author_id = Yii::app()->user->id;
+			if ($model->save()) {
+				$this->redirect(array('view', 'id' => $model->id));
+			}
 		}
 
-		$this->render('create',array(
-			'model'=>$model,
-		));
+		$categories = CHtml::listData(Category::model()->findAll(), 'id', 'name');
+
+		$this->render(
+			'create',
+			array(
+				'model' => $model,
+				'categories' => $categories,
+			)
+		);
 	}
 
 	/**
@@ -86,21 +107,25 @@ class BlogPostController extends Controller
 	 */
 	public function actionUpdate($id)
 	{
-		$model=$this->loadModel($id);
-
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
-
-		if(isset($_POST['BlogPost']))
-		{
-			$model->attributes=$_POST['BlogPost'];
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
+		$model = $this->loadModel($id);
+		if ($model->author_id !== Yii::app()->user->id) {
+			throw new CHttpException(403, 'You are not authorized to perform this action.');
 		}
 
-		$this->render('update',array(
-			'model'=>$model,
-		));
+		if (isset($_POST['BlogPost'])) {
+			$model->attributes = $_POST['BlogPost'];
+			if ($model->save()) {
+				$this->redirect(array('view', 'id' => $model->id));
+			}
+		}
+
+		$categories = CHtml::listData(Category::model()->findAll(), 'id', 'name');
+
+		$this->render('update', array(
+			'model' => $model,
+			'categories' => $categories,
+		)
+		);
 	}
 
 	/**
@@ -110,11 +135,17 @@ class BlogPostController extends Controller
 	 */
 	public function actionDelete($id)
 	{
-		$this->loadModel($id)->delete();
+		$model = $this->loadModel($id);
+		if ($model->author_id !== Yii::app()->user->id) {
+			throw new CHttpException(403, 'You are not authorized to perform this action.');
+		}
 
-		// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-		if(!isset($_GET['ajax']))
+		$model->delete();
+
+		// Redirect to admin page
+		if (!isset($_GET['ajax'])) {
 			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+		}
 	}
 
 	/**
@@ -122,10 +153,26 @@ class BlogPostController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('BlogPost');
-		$this->render('index',array(
-			'dataProvider'=>$dataProvider,
-		));
+		$criteria = new CDbCriteria();
+		$criteria->condition = 'visibility = 1'; // Only public posts
+		$criteria->order = 'created_at DESC'; // Order by latest posts
+
+		$dataProvider = new CActiveDataProvider(
+			'BlogPost',
+			array(
+				'criteria' => $criteria,
+				'pagination' => array(
+					'pageSize' => 10,
+				),
+			)
+		);
+
+		$this->render(
+			'index',
+			array(
+				'dataProvider' => $dataProvider,
+			)
+		);
 	}
 
 	/**
@@ -133,14 +180,31 @@ class BlogPostController extends Controller
 	 */
 	public function actionAdmin()
 	{
-		$model=new BlogPost('search');
-		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['BlogPost']))
-			$model->attributes=$_GET['BlogPost'];
+		if (Yii::app()->user->getState('isVerified') != 1) {
+			throw new CHttpException(403, 'You are not authorized to perform this action.');
+		}
 
-		$this->render('admin',array(
-			'model'=>$model,
-		));
+		$criteria = new CDbCriteria();
+		$criteria->condition = 'author_id = :author_id';
+		$criteria->params = array(':author_id' => Yii::app()->user->id);
+		$criteria->order = 'created_at DESC';
+
+		$dataProvider = new CActiveDataProvider(
+			'BlogPost',
+			array(
+				'criteria' => $criteria,
+				'pagination' => array(
+					'pageSize' => 10,
+				),
+			)
+		);
+
+		$this->render(
+			'admin',
+			array(
+				'dataProvider' => $dataProvider,
+			)
+		);
 	}
 
 	/**
@@ -152,9 +216,10 @@ class BlogPostController extends Controller
 	 */
 	public function loadModel($id)
 	{
-		$model=BlogPost::model()->findByPk($id);
-		if($model===null)
-			throw new CHttpException(404,'The requested page does not exist.');
+		$model = BlogPost::model()->findByPk($id);
+		if ($model === null) {
+			throw new CHttpException(404, 'The requested page does not exist.');
+		}
 		return $model;
 	}
 
@@ -164,8 +229,7 @@ class BlogPostController extends Controller
 	 */
 	protected function performAjaxValidation($model)
 	{
-		if(isset($_POST['ajax']) && $_POST['ajax']==='blog-post-form')
-		{
+		if (isset($_POST['ajax']) && $_POST['ajax'] === 'blog-post-form') {
 			echo CActiveForm::validate($model);
 			Yii::app()->end();
 		}
