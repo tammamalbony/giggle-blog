@@ -19,7 +19,6 @@ class m240711_113602_add_initial_categories extends CDbMigration
 		$this->execute("
 			DELETE FROM `category` WHERE `id` IN (1, 2, 3, 4, 5);
 		");
-		echo "m240711_113602_add_initial_categories does not support migration down.\n";
 		return false;
 	}
 

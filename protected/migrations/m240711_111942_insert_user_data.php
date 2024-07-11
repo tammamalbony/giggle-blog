@@ -17,7 +17,6 @@ class m240711_111942_insert_user_data extends CDbMigration
 		$this->execute("
 		DELETE FROM `user` WHERE `id` IN (1, 2, 3);
 	");
-		echo "m240711_111942_insert_user_data does not support migration down.\n";
 		return false;
 	}
 

@@ -14,7 +14,6 @@ class m240710_165938_update_user_table extends CDbMigration
 		$this->dropColumn('user', 'first_name');
         $this->dropColumn('user', 'last_name');
         $this->dropColumn('user', 'username');
-		echo "m240710_135828_update_user_table does not support migration down.\n";
 		return false;
 	}
 

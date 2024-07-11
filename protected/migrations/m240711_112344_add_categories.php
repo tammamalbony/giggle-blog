@@ -27,7 +27,6 @@ class m240711_112344_add_categories extends CDbMigration
  
 		 // Drop category table
 		 $this->dropTable('category');
-		echo "m240711_112344_add_categories does not support migration down.\n";
 		return false;
 	}
 

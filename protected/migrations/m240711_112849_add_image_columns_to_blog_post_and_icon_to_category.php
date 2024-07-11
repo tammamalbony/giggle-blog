@@ -20,7 +20,6 @@ class m240711_112849_add_image_columns_to_blog_post_and_icon_to_category extends
  
 		 // Drop icon column from category table
 		 $this->dropColumn('category', 'icon');
-		echo "m240711_112849_add_image_columns_to_blog_post_and_icon_to_category does not support migration down.\n";
 		return false;
 	}
 

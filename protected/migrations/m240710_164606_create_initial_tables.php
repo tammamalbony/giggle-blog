@@ -70,7 +70,6 @@ class m240710_164606_create_initial_tables extends CDbMigration
         $this->dropTable('comment');
         $this->dropTable('blog_post');
         $this->dropTable('user');
-		echo "m240710_164606_create_initial_tables does not support migration down.\n";
 		return false;
 	}
 

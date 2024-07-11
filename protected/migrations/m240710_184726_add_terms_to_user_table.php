@@ -10,7 +10,6 @@ class m240710_184726_add_terms_to_user_table extends CDbMigration
 	public function down()
 	{
 		$this->dropColumn('user', 'terms');
-		echo "m240710_184726_add_terms_to_user_table does not support migration down.\n";
 		return false;
 	}
 
