@@ -688,7 +688,9 @@ svg {
 #catigories .col {
     padding: 0.25rem !important;
 }
-
+.image-preview label{
+    font-size:12px !important;
+}
 form input {
     width: -webkit-fill-available !important;
     max-width: none !important;

@@ -6,11 +6,11 @@ class m240711_113602_add_initial_categories extends CDbMigration
 	{
 		$this->execute("
 		INSERT INTO `category` (`id`, `name`, `icon`, `created_at`, `updated_at`) VALUES
-		(1, 'Skin Care', '/custom/img/s2/1b.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-		(2, 'Hair Care', '/custom/img/s2/2b.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-		(3, 'Sports', '/custom/img/s2/3b.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-		(4, 'Books', '/custom/img/s2/4b.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-		(5, 'Music', '/custom/img/s2/5b.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+		(1, 'Skin Care', '1b.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+		(2, 'Hair Care', '2b.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+		(3, 'Sports', '3b.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+		(4, 'Books', '4b.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+		(5, 'Music', '5b.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 	");
 	}
 

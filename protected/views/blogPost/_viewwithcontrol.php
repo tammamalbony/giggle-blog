@@ -11,7 +11,7 @@
                 data-id="<?php echo $data->id; ?>">
                 <i class="bi <?php echo $isLiked ? 'bi-hand-thumbs-down' : 'bi-hand-thumbs-up'; ?>"></i>
             </button>
-            <img src="<?php echo CHtml::encode($data->image); ?>" class="card-img-top clickable-card"
+            <img src="<?php echo "/";echo isset($_ENV['UPLOAD_DIR']) ?  $_ENV['UPLOAD_DIR'] : "uploads"; echo "/" ; echo CHtml::encode($data->image); ?>" class="card-img-top clickable-card"
                 data-link="<?php echo $this->createUrl('view', array('id' => $data->id)); ?>"
                 alt="<?php echo CHtml::encode($data->title); ?>">
             <div class="card-body ">
@@ -50,9 +50,11 @@
                         <strong>Visibility:
                             <span
                                 class="visibility-status"><?php echo CHtml::encode($data->visibility == 1 ? 'Public' : 'Private'); ?></span></strong>
-                        <label class="switch">
-                            <input type="checkbox" class="visibility-toggle" data-id="<?php echo $data->id; ?>" <?php echo $data->visibility == 1 ? 'checked' : ''; ?>>
-                            <span class="slider round"></span>
+                        <?php if ($data->author_id == Yii::app()->user->id): ?>
+                            <label class="switch">
+                                <input type="checkbox" class="visibility-toggle" data-id="<?php echo $data->id; ?>" <?php echo $data->visibility == 1 ? 'checked' : ''; ?>>
+                                <span class="slider round"></span>
+                            <?php endif; ?>
                         </label>
                     </div>
                     <div>
@@ -64,12 +66,15 @@
                             <span class="like-count"><?php echo CHtml::encode($data->getLikeCount()); ?></span></strong>
                     </div>
                 </div>
-                <div class="d-flex justify-content-end EditPostbtn">
-                    <a href="<?php echo $this->createUrl('update', array('id' => $data->id)); ?>"
-                        class="btn btn-secondary btn-sm rounded-pill">
-                        <i class="bi bi-pencil"></i> Edit
-                    </a>
-                </div>
+
+                <?php if ($data->author_id == Yii::app()->user->id): ?>
+                    <div class="d-flex justify-content-end EditPostbtn">
+                        <a href="<?php echo $this->createUrl('edit', array('id' => $data->id)); ?>"
+                            class="btn btn-secondary btn-sm rounded-pill">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>

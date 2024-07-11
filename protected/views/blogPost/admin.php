@@ -47,7 +47,7 @@ $this->breadcrumbs = array(
 						<td>
 							<a href="<?php echo $this->createUrl('view', array('id' => $post->id)); ?>"
 								class="btn btn-sm btn-primary"><i class="bi bi-eye"></i></a>
-							<a href="<?php echo $this->createUrl('update', array('id' => $post->id)); ?>"
+							<a href="<?php echo $this->createUrl('edit', array('id' => $post->id)); ?>"
 								class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
 							<button class="btn btn-sm btn-danger delete-post" data-id="<?php echo $post->id; ?>"><i
 									class="bi bi-trash"></i></button>

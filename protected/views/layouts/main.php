@@ -45,7 +45,8 @@
 		rel="stylesheet">
 	<link href="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/sweetAlert2/sweetalert2.min.css"
 		rel="stylesheet">
-
+	<link href="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/summernote/summernote.min.css"
+		rel="stylesheet">
 	<!-- <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/main.css"> -->
 	<!-- <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/form.css"> -->
 
@@ -221,14 +222,14 @@
 			class="bi bi-arrow-up-short"></i></a>
 
 	<div id="preloader"></div>
-	<script
-		src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/aos/aos.js"></script>
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/glightbox/js/glightbox.min.js"></script>
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/purecounter/purecounter_vanilla.js"></script>
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/swiper/swiper-bundle.min.js"></script>
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/php-email-form/validate.js"></script>
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/sweetAlert2/sweetalert2.all.min.js"></script>
+	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/summernote/summernote.min.js"></script>
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/js/main.js"></script>
 
 </body>

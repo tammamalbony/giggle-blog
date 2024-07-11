@@ -1,6 +1,7 @@
 <?php
 /* @var $this BlogPostController */
 /* @var $model BlogPost */
+/* @var $categories array */
 
 $this->breadcrumbs=array(
 	'Blog Posts'=>array('index'),
@@ -18,4 +19,4 @@ $this->menu=array(
 
 <h1>Update BlogPost <?php echo $model->id; ?></h1>
 
-<?php $this->renderPartial('_form', array('model'=>$model)); ?>
+<?php $this->renderPartial('_form', array('model' => $model, 'categories' => $categories)); ?>
