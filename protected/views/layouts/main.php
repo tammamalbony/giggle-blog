@@ -283,7 +283,6 @@
 		let upload_dir = '<?php echo isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads"; ?>';
 		let previousQuery = '';
 		let intervalId;
-
 		document.getElementById('SearchInput').addEventListener('input', function () {
 			var inputText = this.value;
 
@@ -296,7 +295,7 @@
 				}
 				searchFunction(inputText)
 				intervalId = setInterval(function () {
-					searchFunction(inputText);
+					searchFunction(inputText, <?= isset($_ENV['REAL_TIME_UPDATE']) && strtoupper($_ENV['REAL_TIME_UPDATE']) === "TRUE" ? 'true' : 'false'; ?>);
 				}, <?php echo isset($_ENV['INTERVAL_TIME']) ? $_ENV['INTERVAL_TIME'] : 5000; ?>);
 			} else {
 				document.getElementById('post-container').style.display = 'none';
@@ -318,21 +317,22 @@
 				});
 			});
 		}
-		function searchFunction(query) {
-			if (query !== previousQuery) {
+		function searchFunction(query, any = false) {
+			if (query !== previousQuery || any == true) {
 				console.log('Searching for:', query);
 				fetchPosts(query);
 				previousQuery = query;
 			}
 		}
-		function fetchPosts() {
+		function fetchPosts(query) {
 			$.ajax({
 				url: '<?php echo Yii::app()->createUrl('blogPost/RealTimePosts'); ?>',
 				method: 'GET',
+				data: { query: query },
 				dataType: 'json',
 				success: function (data) {
 					$('#post-container .row').html(renderPosts(data));
-					setupClickableCards() 
+					setupClickableCards();
 				},
 				error: function (jqXHR, textStatus, errorThrown) {
 					console.error('Error fetching posts:', textStatus, errorThrown);
