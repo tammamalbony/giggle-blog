@@ -540,7 +540,7 @@
 		});
 	});
 
-	<?php if (isset($_ENV['EDITOR_ENABLE']) && $_ENV['EDITOR_ENABLE'] === "TRUE") { ?>
+	<?php if (isset($_ENV['EDITOR_ENABLE']) &&  strtoupper($_ENV['EDITOR_ENABLE']) === "TRUE") { ?>
 		$(document).ready(function () {
 			$('#BlogPost_description').summernote({
 				height: 300,

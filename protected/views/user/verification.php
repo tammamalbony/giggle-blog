@@ -22,7 +22,7 @@ $this->breadcrumbs = array(
             <p class="lead mt-4">Your account is not yet verified. To fully activate your account and access all
                 features, please check your email and follow the instructions to verify your account.</p>
 
-            <?php if (isset($_ENV['IS_EMAIL_ENABEL']) && $_ENV['IS_EMAIL_ENABEL'] == "TRUE") {
+            <?php if (isset($_ENV['IS_EMAIL_ENABEL']) &&  strtoupper($_ENV['IS_EMAIL_ENABEL']) === "TRUE") {
                 ?>
                 <div class="mt-4">
                     <p>If you did not receive the email, <a
@@ -70,7 +70,7 @@ $this->breadcrumbs = array(
 
                 </script>
                 <?php
-            } elseif (isset($_ENV['IS_EMAIL_ENABEL']) && $_ENV['IS_EMAIL_ENABEL'] != "TRUE") { ?>
+            } else{ ?>
                 <div class="mt-2">
                     <p>The email server is not enabled or not configured.
                         <a href="<?php echo $this->createUrl('user/verifyNow', array('id' => Yii::app()->user->id)); ?>"

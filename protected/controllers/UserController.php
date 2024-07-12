@@ -28,7 +28,7 @@ class UserController extends Controller
 	{
 		return array(
 			array('allow', 'actions' => array('index', 'view', 'register', 'signUp', 'verify', 'ajaxEmailCheck', 'ajaxUsernameCheck'), 'users' => array('*')),
-			array('allow', 'actions' => array('create', 'update', 'verification', 'resendVerification','verifyNow'), 'users' => array('@')),
+			array('allow', 'actions' => array('create', 'update', 'verification', 'resendVerification', 'verifyNow'), 'users' => array('@')),
 			array('allow', 'actions' => array('admin', 'delete'), 'users' => array('admin')),
 			array('deny', 'users' => array('*')),
 		);
@@ -40,9 +40,11 @@ class UserController extends Controller
 	 */
 	public function actionView($id)
 	{
-		$this->render('view', array(
-			'model' => $this->loadModel($id),
-		)
+		$this->render(
+			'view',
+			array(
+				'model' => $this->loadModel($id),
+			)
 		);
 	}
 
@@ -63,9 +65,11 @@ class UserController extends Controller
 				$this->redirect(array('view', 'id' => $model->id));
 		}
 
-		$this->render('create', array(
-			'model' => $model,
-		)
+		$this->render(
+			'create',
+			array(
+				'model' => $model,
+			)
 		);
 	}
 
@@ -87,9 +91,11 @@ class UserController extends Controller
 				$this->redirect(array('view', 'id' => $model->id));
 		}
 
-		$this->render('update', array(
-			'model' => $model,
-		)
+		$this->render(
+			'update',
+			array(
+				'model' => $model,
+			)
 		);
 	}
 
@@ -113,9 +119,11 @@ class UserController extends Controller
 	public function actionIndex()
 	{
 		$dataProvider = new CActiveDataProvider('User');
-		$this->render('index', array(
-			'dataProvider' => $dataProvider,
-		)
+		$this->render(
+			'index',
+			array(
+				'dataProvider' => $dataProvider,
+			)
 		);
 	}
 
@@ -129,9 +137,11 @@ class UserController extends Controller
 		if (isset($_GET['User']))
 			$model->attributes = $_GET['User'];
 
-		$this->render('admin', array(
-			'model' => $model,
-		)
+		$this->render(
+			'admin',
+			array(
+				'model' => $model,
+			)
 		);
 	}
 
@@ -169,16 +179,31 @@ class UserController extends Controller
 		if (isset($_POST['User'])) {
 			$model->attributes = $_POST['User'];
 			$model->verification_token = md5(uniqid(mt_rand(), true));
-
 			if ($model->save()) {
-				$verificationUrl = $this->createAbsoluteUrl('user/verify', array('token' => $model->verification_token));
-				Yii::log("Verification URL: $verificationUrl", CLogger::LEVEL_INFO);
-				$body = "Please click on the following link to verify your account: <a href='{$verificationUrl}'>Verify Account</a>";
+				if (isset($_ENV['IS_EMAIL_ENABEL']) &&  strtoupper($_ENV['IS_EMAIL_ENABEL'])  === "TRUE") {
+					$verificationUrl = $this->createAbsoluteUrl('user/verify', array('token' => $model->verification_token));
+					Yii::log("Verification URL: $verificationUrl", CLogger::LEVEL_INFO);
+					$body = "Please click on the following link to verify your account: <a href='{$verificationUrl}'>Verify Account</a>";
+					try {
+						if (Yii::app()->mail->sendMail($model->email, 'Verify Your Account', $body)) {
+							$response = ['status' => 'success', 'message' => 'Thank you for registering. Please check your email to verify your account.'];
+						} else {
+							$response['message'] = 'Error while sending verification email.';
+						}
+					} catch (\Throwable $th) {
+						Yii::app()->user->setFlash('error', 'Exception while sending verification email.');
+						Yii::log(
+							"Exception while sending verification email: " . $th->getMessage() . "\n" .
+							"File: " . $th->getFile() . "\n" .
+							"Line: " . $th->getLine() . "\n" .
+							"Stack trace: \n" . $th->getTraceAsString(),
+							CLogger::LEVEL_ERROR,
+							'application'
+						);
+					}
 
-				if (Yii::app()->mail->sendMail($model->email, 'Verify Your Account', $body)) {
-					$response = ['status' => 'success', 'message' => 'Thank you for registering. Please check your email to verify your account.'];
 				} else {
-					$response['message'] = 'Error while sending verification email.';
+					Yii::app()->user->setFlash('success', 'Thank you for registering. A new verification email has been mocked up.');
 				}
 			} else {
 				$response['message'] = 'Error while saving user information.';
@@ -220,7 +245,10 @@ class UserController extends Controller
 			Yii::app()->user->setFlash('error', 'You can only verify your own account.');
 			$this->redirect(array('user/verification'));
 		}
-	
+		if (isset($_ENV['IS_EMAIL_ENABEL']) && strtoupper($_ENV['IS_EMAIL_ENABEL']) === "TRUE") {
+			Yii::app()->user->setFlash('error', 'You can verify your own account only When EMAIL SERVER Is OFF.');
+			$this->redirect(array('user/verification'));
+		}
 		$user = User::model()->findByPk($id);
 		if ($user && !$user->is_verified) {
 			$user->is_verified = 1;
@@ -242,18 +270,33 @@ class UserController extends Controller
 	{
 		$user = User::model()->findByPk(Yii::app()->user->id);
 		if ($user && !$user->is_verified) {
-			$user->verification_token = md5(uniqid(rand(), true)); // Generate a new token
+			$user->verification_token = md5(uniqid(rand(), true));
 			if ($user->save(false)) {
-				$verificationUrl = Yii::app()->createAbsoluteUrl('user/verify', ['token' => $user->verification_token]);
-				$body = "Please click on the following link to verify your account: <a href='{$verificationUrl}'>Verify Account</a>";
-				if(isset($_ENV['IS_EMAIL_ENABEL']) && $_ENV['IS_EMAIL_ENABEL'] == "TRUE"){
-					Yii::app()->user->setFlash('success', 'A new verification email has been mocked up.');
-				}else{
-					if (Yii::app()->mail->sendMail($user->email, 'Verify Your Account', $body)) {
-						Yii::app()->user->setFlash('success', 'A new verification email has been sent to your email address.');
-					} else {
-						Yii::app()->user->setFlash('error', 'Error while sending verification email.');
+				
+				if (isset($_ENV['IS_EMAIL_ENABEL']) &&  strtoupper($_ENV['IS_EMAIL_ENABEL']) === "TRUE") {
+					try {
+						$verificationUrl = Yii::app()->createAbsoluteUrl('user/verify', ['token' => $user->verification_token]);
+						$body = "Please click on the following link to verify your account: <a href='{$verificationUrl}'>Verify Account</a>";
+						if (Yii::app()->mail->sendMail($user->email, 'Verify Your Account', $body)) {
+							Yii::app()->user->setFlash('success', 'A new verification email has been sent to your email address.');
+						} else {
+							Yii::app()->user->setFlash('error', 'Error while sending verification email.');
+						}
+					} catch (\Throwable $th) {
+						Yii::app()->user->setFlash('error', 'Exception while sending verification email.');
+						Yii::log(
+							"Exception while sending verification email: " . $th->getMessage() . "\n" .
+							"File: " . $th->getFile() . "\n" .
+							"Line: " . $th->getLine() . "\n" .
+							"Stack trace: \n" . $th->getTraceAsString(),
+							CLogger::LEVEL_ERROR,
+							'application'
+						);
 					}
+
+				} else {
+					Yii::app()->user->setFlash('success', 'A new verification email has been mocked up.');
+
 				}
 			} else {
 				Yii::app()->user->setFlash('error', 'Error while generating new verification token.');
@@ -261,10 +304,10 @@ class UserController extends Controller
 		} else {
 			Yii::app()->user->setFlash('error', 'Your account is already verified or user not found.');
 		}
-	
+
 		$this->redirect(array('user/verification'));
 	}
-	
+
 
 	public function actionAjaxEmailCheck()
 	{

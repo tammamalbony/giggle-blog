@@ -32,6 +32,3 @@ if ($conn->query($sql) === TRUE) {
 
 $conn->close();
 
-
-//php create_database.php
-//./protected/yiic migrate

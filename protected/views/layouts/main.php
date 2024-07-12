@@ -67,11 +67,7 @@
 				class="logo d-flex align-items-center me-auto me-lg-0">
 				<img src="<?php echo Yii::app()->request->baseUrl; ?>/custom/img/logoB.png" alt="Giggle Logo">
 			</a>
-			<?php if (Yii::app()->user->hasFlash('error')): ?>
-				<div class="alert alert-danger">
-					<?php echo Yii::app()->user->getFlash('error'); ?>
-				</div>
-			<?php endif; ?>
+
 			<nav id="navbar" class="navbar">
 				<ul>
 					<li><a href="<?php echo Yii::app()->createUrl('site/index'); ?>" class="ActiveNavIteam">Home</a>
@@ -143,7 +139,9 @@
 
 		</div>
 	</header>
+
 	<main id="main">
+		
 		<?php echo $content; ?>
 	</main>
 	<footer id="footer" class="footer mt-5 mb-0 mx-0">
@@ -222,7 +220,8 @@
 			class="bi bi-arrow-up-short"></i></a>
 
 	<div id="preloader"></div>
-	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<script
+		src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/aos/aos.js"></script>
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/glightbox/js/glightbox.min.js"></script>
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/purecounter/purecounter_vanilla.js"></script>
@@ -231,7 +230,16 @@
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/sweetAlert2/sweetalert2.all.min.js"></script>
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/summernote/summernote.min.js"></script>
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/js/main.js"></script>
-
+	<script>
+		 <?php if (Yii::app()->user->hasFlash('error')): ?>
+        Swal.fire({
+            title: 'Error!',
+            text: '<?php echo Yii::app()->user->getFlash('error'); ?>',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+        <?php endif; ?>
+	</script>
 </body>
 
 </html>
