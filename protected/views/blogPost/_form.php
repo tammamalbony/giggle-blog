@@ -1,4 +1,4 @@
-<div class="container controls_filters" style="margin-top: 100px;">
+<div class="container controls_filters" style="margin-top: 100px;" data-aos="zoom-in" data-aos-duration="1200" data-aos-anchor-placement="top-bottom">
 	<div class="row">
 		<div class="col-12 text-center flex-column d-flex justify-content-center">
 			<div class="text-center">
@@ -19,31 +19,31 @@
 				)
 			); ?>
 			<?php echo $form->hiddenField($model, 'id'); ?>
-			<div class="mb-3">
+			<div class="mb-3"  data-aos="flip-left" data-aos-duration="1000" data-aos-mirror="true" >
 				<?php echo $form->labelEx($model, 'title', array('class' => 'form-label')); ?>
 				<?php echo $form->textField($model, 'title', array('class' => 'form-control', 'placeholder' => 'Title', 'required' => true, 'maxlength' => 255)); ?>
 				<?php echo $form->error($model, 'title', array('class' => 'invalid-feedback')); ?>
 			</div>
 
-			<div class="mb-3">
+			<div class="mb-3"  data-aos="flip-left" data-aos-duration="1000" data-aos-mirror="true" >
 				<?php echo $form->labelEx($model, 'description', array('class' => 'form-label')); ?>
 				<?php echo $form->textArea($model, 'description', array('class' => 'form-control', 'placeholder' => 'Description', 'rows' => 6, 'required' => true)); ?>
 				<?php echo $form->error($model, 'description', array('class' => 'invalid-feedback')); ?>
 			</div>
 
-			<div class="mb-3">
+			<div class="mb-3"  data-aos="flip-left" data-aos-duration="1000" data-aos-mirror="true" >
 				<?php echo $form->labelEx($model, 'content', array('class' => 'form-label')); ?>
 				<?php echo $form->textArea($model, 'content', array('class' => 'form-control', 'placeholder' => 'Content', 'rows' => 6, 'required' => true)); ?>
 				<?php echo $form->error($model, 'content', array('class' => 'invalid-feedback')); ?>
 			</div>
 
-			<div class="mb-3">
+			<div class="mb-3"  data-aos="flip-left" data-aos-duration="1000" data-aos-mirror="true" >
 				<?php echo $form->labelEx($model, 'visibility', array('class' => 'form-label')); ?>
 				<?php echo $form->dropDownList($model, 'visibility', array(1 => 'Public', 0 => 'Private'), array('class' => 'form-control')); ?>
 				<?php echo $form->error($model, 'visibility', array('class' => 'invalid-feedback')); ?>
 			</div>
 
-			<div class="mb-3 image-preview">
+			<div class="mb-3 image-preview" data-aos="slide-down" data-aos-duration="800" data-aos-offset="200" data-aos-anchor-placement="center-bottom">
 				<?php echo $form->labelEx($model, 'image', array('class' => 'form-label')); ?>
 				<input type="file" id="image-file" class="form-control" accept="image/*">
 				<?php echo $form->hiddenField($model, 'image', array('id' => 'BlogPost_image')); ?>
@@ -68,7 +68,7 @@
 				<?php echo $form->error($model, 'image', array('class' => 'invalid-feedback')); ?>
 			</div>
 
-			<div class="mb-3 image-preview">
+			<div class="mb-3 image-preview" data-aos="slide-down" data-aos-duration="800" data-aos-offset="200" data-aos-anchor-placement="center-bottom">
 				<?php echo $form->labelEx($model, 'cover_image', array('class' => 'form-label')); ?>
 				<input type="file" id="cover-image-file" class="form-control" accept="image/*">
 				<?php echo $form->hiddenField($model, 'cover_image', array('id' => 'BlogPost_cover_image')); ?>
@@ -94,13 +94,13 @@
 				<?php echo $form->error($model, 'cover_image', array('class' => 'invalid-feedback')); ?>
 			</div>
 
-			<div class="mb-3">
+			<div class="mb-3" data-aos="slide-down" data-aos-duration="800" data-aos-offset="200" data-aos-anchor-placement="center-bottom">
 				<?php echo $form->labelEx($model, 'category_id', array('class' => 'form-label')); ?>
 				<?php echo $form->dropDownList($model, 'category_id', $categories, array('class' => 'form-control')); ?>
 				<?php echo $form->error($model, 'category_id', array('class' => 'invalid-feedback')); ?>
 			</div>
 
-			<div class="row buttons">
+			<div class="row buttons" data-aos="slide-down" data-aos-duration="800" data-aos-offset="200" data-aos-anchor-placement="center-bottom">
 				<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save', array('class' => 'btn btn-primary btnmain mt-3', 'id' => 'submit-button')); ?>
 			</div>
 

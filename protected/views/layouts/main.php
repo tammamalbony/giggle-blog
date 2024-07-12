@@ -38,7 +38,9 @@
 		rel="stylesheet">
 	<link href="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/bootstrap-icons/bootstrap-icons.css"
 		rel="stylesheet">
-	<link href="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/aos/aos.css" rel="stylesheet">
+	<?php if (isset($_ENV['ANIMATION_ENABLE']) && strtoupper($_ENV['ANIMATION_ENABLE']) === "TRUE") { ?>
+		<link href="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/aos/aos.css" rel="stylesheet">
+	<?php } ?>
 	<link href="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/glightbox/css/glightbox.min.css"
 		rel="stylesheet">
 	<link href="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/swiper/swiper-bundle.min.css"
@@ -225,7 +227,9 @@
 	<div id="preloader"></div>
 	<script
 		src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/aos/aos.js"></script>
+	<?php if (isset($_ENV['ANIMATION_ENABLE']) && strtoupper($_ENV['ANIMATION_ENABLE']) === "TRUE") { ?>
+		<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/aos/aos.js"></script>
+	<?php } ?>
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/glightbox/js/glightbox.min.js"></script>
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/purecounter/purecounter_vanilla.js"></script>
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/swiper/swiper-bundle.min.js"></script>
@@ -245,6 +249,24 @@
 				confirmButtonText: 'OK'
 			});
 		<?php endif; ?>
+	</script>
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			<?php if (isset($_ENV['ANIMATION_ENABLE']) && strtoupper($_ENV['ANIMATION_ENABLE']) === "TRUE") {
+				?>
+				new PureCounter();
+				function aos_init() {
+					AOS.init({
+						duration: 10,
+						easing: 'ease-in-out',
+						once: true,
+						mirror: false
+					});
+				}
+				aos_init();
+
+			<?php } ?>
+		});
 	</script>
 </body>
 

@@ -3,7 +3,7 @@
 /* @var $data BlogPost */
 ?>
 
-<div class="col-md-4 col-sm-12 card-col-container" data-id="<?php echo $data->id; ?>">
+<div class="col-md-4 col-sm-12 card-col-container" data-id="<?php echo $data->id; ?>" data-aos="zoom-in" data-aos-offset="300" data-aos-duration="1000" data-aos-mirror="true" data-aos-once="false">
     <div class="card mb-3">
         <div class="row g-0 position-relative">
             <?php $isLiked = $data->isLikedByCurrentUser(); ?>
@@ -71,12 +71,20 @@
                     <div class="clickable-card"
                         data-link="<?php echo $this->createUrl('view', array('id' => $data->id)); ?>">
                         <strong>Comments:
-                            <span><?php echo CHtml::encode($data->getCommentCount()); ?></span></strong>
+                            <span id="comment-count" class="purecounter" data-purecounter-start="0"
+                                data-purecounter-end="<?php echo CHtml::encode($data->getCommentCount()); ?>"
+                                data-purecounter-duration="2"
+                                data-actual-count="<?php echo CHtml::encode($data->getCommentCount()); ?>"><?php echo CHtml::encode($data->getCommentCount()); ?></span>
+                        </strong>
                     </div>
                     <div class="clickable-card"
                         data-link="<?php echo $this->createUrl('view', array('id' => $data->id)); ?>">
                         <strong>Likes:
-                            <span class="like-count"><?php echo CHtml::encode($data->getLikeCount()); ?></span></strong>
+                            <span id="like-count" class="purecounter" data-purecounter-start="0"
+                                data-purecounter-end="<?php echo CHtml::encode($data->getLikeCount()); ?>"
+                                data-purecounter-duration="2"
+                                data-actual-count="<?php echo CHtml::encode($data->getLikeCount()); ?>"><?php echo CHtml::encode($data->getLikeCount()); ?></span>
+                        </strong>
                     </div>
 
                 </div>

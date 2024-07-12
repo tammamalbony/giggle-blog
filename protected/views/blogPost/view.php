@@ -21,7 +21,7 @@ $this->breadcrumbs = array(
 	<div style="background-image:url('<?php echo "/";
 	echo isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads";
 	echo "/";
-	echo CHtml::encode($model->cover_image); ?>')" class=" mb-4 cover-image" alt="Cover Image">
+	echo CHtml::encode($model->cover_image); ?>')" class=" mb-4 cover-image" data-aos="slide-up" data-aos-duration="1500" data-aos-offset="300" data-aos-easing="ease-in-out" alt="Cover Image">
 
 	</div>
 <?php endif; ?>
@@ -58,10 +58,16 @@ $this->breadcrumbs = array(
 		</div>
 		<div class="col-md-6 col-sm-6 col-12">
 			<?php if (!empty($category->icon)): ?>
-				<img src="<?php echo "/";
+				<a href="<?php echo "/";
 				echo isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads";
 				echo "/";
-				echo CHtml::encode($category->icon); ?>" class="img-fluid cat-image" alt="Category Image">
+				echo CHtml::encode($category->icon); ?>" class="glightbox">
+					<img src="<?php echo "/";
+					echo isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads";
+					echo "/";
+					echo CHtml::encode($category->icon); ?>" class="img-fluid cat-image" data-aos="slide-up" data-aos-duration="1500" data-aos-offset="300" data-aos-easing="ease-in-out" alt="Category Image">
+				</a>
+
 			<?php endif; ?>
 		</div>
 		<div class="col-md-12">
@@ -97,11 +103,17 @@ $this->breadcrumbs = array(
 		</div>
 		<div class="col-md-6 col-sm-6 col-12">
 			<?php if (!empty($model->image)): ?>
-				<img src="<?php echo "/";
+				<a href="<?php echo "/";
 				echo isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads";
 				echo "/";
-				echo CHtml::encode($model->image); ?>" class="img-fluid cat-image" alt="Post thumbnail">
+				echo CHtml::encode($model->image); ?>" class="glightbox">
+					<img src="<?php echo "/";
+					echo isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads";
+					echo "/";
+					echo CHtml::encode($model->image); ?>" class="img-fluid cat-image" data-aos="flip-left" data-aos-duration="1000" data-aos-mirror="true" data-aos-once="false" alt="Post thumbnail">
+				</a>
 			<?php endif; ?>
+
 		</div>
 		<div class="col-md-12">
 			<hr>
@@ -132,7 +144,12 @@ $this->breadcrumbs = array(
 			];
 			?>
 			<div class="mb-4">
-				<h4>Likes <span class="like-count"><?php echo CHtml::encode($model->getLikeCount()); ?></span></h4>
+				<h4>Likes <span class="like-count"><?php echo CHtml::encode($model->getLikeCount()); ?></span>
+					<button type="button" class="btn btn-primary" id="showLikesBtn">
+						Show Likes
+					</button>
+
+				</h4>
 				<h4>Comments <?php echo CHtml::encode($model->getCommentCount()); ?></h4>
 				<div class="comments-container">
 					<?php if (!empty($model->comments)): ?>
@@ -143,10 +160,12 @@ $this->breadcrumbs = array(
 										<div class="card mb-3">
 											<div class="card-body">
 												<h5 class="card-title"><?php echo CHtml::encode($comment->author->username); ?>
-												<i class="bi <?php 	$randomIcon = $icons[array_rand($icons)]; echo $randomIcon; ?>"></i>
+													<i class="bi <?php $randomIcon = $icons[array_rand($icons)];
+													echo $randomIcon; ?>"></i>
 												</h5>
 												<p class="card-text comment-contnet-dispaly">
-													<?php echo CHtml::encode($comment->content); ?></p>
+													<?php echo CHtml::encode($comment->content); ?>
+												</p>
 												<p class="card-text">
 													<small
 														class="text-muted"><?php echo CHtml::encode($comment->created_at); ?></small>
@@ -298,17 +317,17 @@ $this->breadcrumbs = array(
 												text: 'Your comment has been added successfully!',
 											}).then(() => {
 												let newCommentSlide = `
-																											<div class="swiper-slide">
-																												<div class="card mb-3">
-																													<div class="card-body">
-																														<h5 class="card-title">${res.comment.author.username}</h5>
-																														<p class="card-text">${res.comment.content}</p>
-																														<p class="card-text">
-																															<small class="text-muted">${res.comment.created_at}</small>
-																														</p>
-																													</div>
-																												</div>
-																											</div>`;
+														<div class="swiper-slide">
+															<div class="card mb-3">
+																<div class="card-body">
+																	<h5 class="card-title">${res.comment.author.username}</h5>
+																	<p class="card-text">${res.comment.content}</p>
+																	<p class="card-text">
+																		<small class="text-muted">${res.comment.created_at}</small>
+																	</p>
+																</div>
+															</div>
+														</div>`;
 												let swiper = document.querySelector('.swiper-container').swiper;
 												swiper.appendSlide(newCommentSlide);
 												swiper.update();
@@ -352,8 +371,30 @@ $this->breadcrumbs = array(
 </div>
 
 <script>
-	$(document).ready(function () {
-		$('.favBtn').on('click', function (event) {
+	document.getElementById('showLikesBtn').addEventListener('click', function () {
+		$.ajax({
+			url: '<?php echo Yii::app()->createUrl("blogPost/getLikes", array("id" => $model->id)); ?>',
+			method: 'GET',
+			success: function (response) {
+				var userList = JSON.parse(response);
+				var userListHtml = '<ul>';
+				userList.forEach(function (user) {
+					userListHtml += '<li>' + user + '</li>';
+				});
+				userListHtml += '</ul>';
+				Swal.fire({
+					title: 'Users who liked this post',
+					html: userListHtml,
+					icon: 'info',
+					confirmButtonText: 'Close'
+				});
+			}
+		});
+	});
+</script>
+
+<script>
+	$('.favBtn').on('click', function (event) {
 			event.preventDefault();
 			var postId = $(this).data('id');
 			var btn = $(this);
@@ -367,8 +408,7 @@ $this->breadcrumbs = array(
 					if (response.success) {
 						btn.toggleClass('btn-outline-primary btn-primary');
 						btn.find('i').toggleClass('bi-hand-thumbs-up bi-hand-thumbs-down');
-						// Update like count
-						$('.like-count').text(response.likeCount);
+						$('.like-count').text(response.likeCount)
 						Swal.fire({
 							icon: 'success',
 							title: 'Success',
@@ -394,6 +434,7 @@ $this->breadcrumbs = array(
 				}
 			});
 		});
+
 		$(document).on('change', '.visibility-toggle', function () {
 			var postId = $(this).data('id');
 			var visibility = $(this).is(':checked') ? 1 : 0;
@@ -431,5 +472,4 @@ $this->breadcrumbs = array(
 				}
 			});
 		});
-	});
 </script>

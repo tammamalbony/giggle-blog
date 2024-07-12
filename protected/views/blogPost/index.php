@@ -18,7 +18,7 @@ $this->breadcrumbs = array(
 		<div class=" justify-content-start my-1 d-none d-md-flex">
 			<h2 class="textGM mx-2">Posts</h2>
 		</div>
-		<div class="d-flex justify-content-end my-1 max-w-100vw">
+		<div class="d-flex justify-content-end my-1 max-w-100vw" data-aos="slide-up" data-aos-duration="1500" data-aos-offset="300" data-aos-easing="ease-in-out">
 			<form action="<?php echo Yii::app()->createUrl('blogPost/index'); ?>" method="GET"
 				class="container-fluid d-block filter-form">
 				<div class="row">
@@ -178,4 +178,5 @@ $this->breadcrumbs = array(
 			});
 		});
 	});
+
 </script>

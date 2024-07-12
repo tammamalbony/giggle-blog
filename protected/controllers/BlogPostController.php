@@ -20,7 +20,7 @@ class BlogPostController extends Controller
 			),
 			array(
 				'allow', // allow authenticated user to perform 'admin', 'create', 'update', 'delete', 'myposts', 'toggleVisibility'
-				'actions' => array('admin', 'create', 'save', 'update', 'edit', 'delete', 'myposts', 'toggleVisibility', 'uploadImage', 'checkImageExists'),
+				'actions' => array('admin', 'create', 'save', 'update', 'edit', 'delete', 'myposts', 'toggleVisibility', 'uploadImage', 'checkImageExists','getLikes'),
 				'users' => array('@'),
 				'expression' => '$user->getState("isVerified") == 1', // Only allow verified users
 			),
@@ -476,6 +476,16 @@ class BlogPostController extends Controller
 		Yii::app()->end();
 	}
 
-
+	public function actionGetLikes($id)
+    {
+        $post = $this->loadModel($id);
+        $likes = $post->getLikes();
+        $usernames = array_map(function($like) {
+            return $like->user->username;
+        }, $likes);
+        
+        echo CJSON::encode($usernames);
+        Yii::app()->end();
+    }
 
 }

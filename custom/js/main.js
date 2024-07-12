@@ -112,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
     selector: '.glightbox'
   });
 
-  new PureCounter();
 
   /* Init swiper slider with 1 slide at once in desktop  */
   new Swiper('.slides-1', {
@@ -202,18 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     slideActiveClass: 'swiper-slide-active'
   });
-  /* Animation on scroll function and init */
-  function aos_init() {
-    AOS.init({
-      duration: 1000,
-      easing: 'ease-in-out',
-      once: true,
-      mirror: false
-    });
-  }
-  window.addEventListener('load', () => {
-    aos_init();
-  });
+
 
   function opensigninPopup(signinPageUrl, Title) {
     var popupWidth = 400;

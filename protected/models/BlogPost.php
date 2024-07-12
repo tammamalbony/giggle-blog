@@ -160,5 +160,8 @@ class BlogPost extends CActiveRecord
 
         return $like !== null;
     }
-
+	public function getLikes()
+	{
+		return $this->likes; 
+	}
 }
