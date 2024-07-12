@@ -216,6 +216,11 @@ class UserController extends Controller
 	}
 	public function actionVerifyNow($id)
 	{
+		if (Yii::app()->user->id != $id) {
+			Yii::app()->user->setFlash('error', 'You can only verify your own account.');
+			$this->redirect(array('user/verification'));
+		}
+	
 		$user = User::model()->findByPk($id);
 		if ($user && !$user->is_verified) {
 			$user->is_verified = 1;
