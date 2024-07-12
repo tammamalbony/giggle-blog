@@ -35,7 +35,9 @@ a {
   color: var(--color-primary);
   text-decoration: none;
 }
-
+.badge-info{
+  color:black;
+}
 .btn.btn-primary {
   background-color: #4eac4a;
   font-weight: bold;

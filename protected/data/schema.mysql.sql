@@ -112,8 +112,13 @@ INSERT INTO `like` (`post_id`, `user_id`, `created_at`) VALUES
 
 -- Insert demo comments
 INSERT INTO `comment` (`post_id`, `author_id`, `content`, `created_at`) VALUES
-(1, 1, 'Great tips on skin care!', CURRENT_TIMESTAMP),
-(1, 2, 'Very useful information.', CURRENT_TIMESTAMP),
-(3, 1, 'I loved the book recommendations.', CURRENT_TIMESTAMP),
-(4, 2, 'Thanks for the insights!', CURRENT_TIMESTAMP),
-(5, 3, 'These songs are amazing.', CURRENT_TIMESTAMP);
+(1, 1, 'I found these skin care tips to be very effective.', CURRENT_TIMESTAMP),
+(1, 2, 'This article is really helpful.', CURRENT_TIMESTAMP),
+(2, 1, 'I appreciate the focus on healthy living.', CURRENT_TIMESTAMP),
+(2, 2, 'More people need to read this!', CURRENT_TIMESTAMP),
+(3, 1, 'Fantastic write-up on books!', CURRENT_TIMESTAMP),
+(3, 2, 'So insightful and useful.', CURRENT_TIMESTAMP),
+(5, 3, 'The energy in these songs is contagious.', CURRENT_TIMESTAMP),
+(5, 2, 'Absolutely love this playlist!', CURRENT_TIMESTAMP),
+(3, 1, 'I\'m definitely going to share this with my friends.', CURRENT_TIMESTAMP),
+(5, 3, 'Can\'t stop listening to these!', CURRENT_TIMESTAMP);

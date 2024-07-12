@@ -107,6 +107,30 @@ $this->breadcrumbs = array(
 			<hr>
 		</div>
 		<div class="col-md-6 col-12">
+			<?php
+			$icons = [
+				'bi-alarm',
+				'bi-bag',
+				'bi-battery',
+				'bi-bezier',
+				'bi-bicycle',
+				'bi-binoculars',
+				'bi-briefcase',
+				'bi-brush',
+				'bi-bug',
+				'bi-calendar',
+				'bi-camera',
+				'bi-capslock',
+				'bi-cash',
+				'bi-chat',
+				'bi-clipboard',
+				'bi-cloud',
+				'bi-code',
+				'bi-cpu',
+				'bi-cup',
+				'bi-droplet'
+			];
+			?>
 			<div class="mb-4">
 				<h4>Likes <span class="like-count"><?php echo CHtml::encode($model->getLikeCount()); ?></span></h4>
 				<h4>Comments <?php echo CHtml::encode($model->getCommentCount()); ?></h4>
@@ -119,8 +143,10 @@ $this->breadcrumbs = array(
 										<div class="card mb-3">
 											<div class="card-body">
 												<h5 class="card-title"><?php echo CHtml::encode($comment->author->username); ?>
+												<i class="bi <?php 	$randomIcon = $icons[array_rand($icons)]; echo $randomIcon; ?>"></i>
 												</h5>
-												<p class="card-text"><?php echo CHtml::encode($comment->content); ?></p>
+												<p class="card-text comment-contnet-dispaly">
+													<?php echo CHtml::encode($comment->content); ?></p>
 												<p class="card-text">
 													<small
 														class="text-muted"><?php echo CHtml::encode($comment->created_at); ?></small>
@@ -140,6 +166,8 @@ $this->breadcrumbs = array(
 							document.addEventListener('DOMContentLoaded', function () {
 								var swiper = new Swiper('.swiper-container', {
 									loop: true,
+									slidesPerView: 1,
+									spaceBetween: 30,
 									autoplay: {
 										delay: 3000, // 3 seconds
 									},
@@ -165,29 +193,152 @@ $this->breadcrumbs = array(
 			<div class="mb-4">
 				<?php if (!Yii::app()->user->isGuest && Yii::app()->user->getState('isVerified')) { ?>
 					<h4>Add your Comment</h4>
-					<?php $form = $this->beginWidget(
+					<?php
+					$form = $this->beginWidget(
 						'CActiveForm',
 						array(
 							'id' => 'comment-form',
 							'enableAjaxValidation' => true,
 							'htmlOptions' => array(
 								'class' => 'needs-validation',
-								'novalidate' => true
+								'novalidate' => true,
 							),
 						)
-					); ?>
+					);
+					?>
 
 					<div class="form-group">
 						<?php echo $form->labelEx($commentModel, 'content'); ?>
-						<?php echo $form->textArea($commentModel, 'content', array('class' => 'form-control', 'rows' => 5, 'required' => true)); ?>
+						<span id="word-counter" class="badge badge-info">0 words, 100 words left</span>
+						<?php echo $form->textArea($commentModel, 'content', array('class' => 'form-control', 'rows' => 5, 'required' => true, 'data-error' => 'Please enter at least 5 words and no more than 100 words.')); ?>
+						<div class="invalid-feedback">Please enter at least 5 words and no more than 100 words.</div>
 						<?php echo $form->error($commentModel, 'content'); ?>
 					</div>
 
+					<?php echo $form->hiddenField($commentModel, 'post_id', array('value' => $model->id)); ?>
+					<?php echo $form->hiddenField($commentModel, 'author_id', array('value' => Yii::app()->user->id)); ?>
+
 					<div class="form-group mt-2">
-						<?php echo CHtml::submitButton('Submit', array('class' => 'btn btn-primary')); ?>
+						<?php echo CHtml::submitButton('Submit', array('class' => 'btn btn-primary', 'id' => 'submit-comment')); ?>
 					</div>
 
 					<?php $this->endWidget(); ?>
+
+					<script>
+						$(document).ready(function () {
+							const maxWords = <?php echo isset($_ENV['MAX_COMMENT_WORDS']) ? $_ENV['MAX_COMMENT_WORDS'] : 99 ?>;
+							const minWords = <?php echo isset($_ENV['MIN_COMMENT_WORDS']) ? $_ENV['MIN_COMMENT_WORDS'] : 4 ?>;
+							$('#Comment_content').on('input', function () {
+								var content = $(this).val();
+								var wordCount = content.trim().split(/\s+/).length;
+								if (wordCount >= 5) {
+									this.setCustomValidity('');
+									$(this).removeClass('is-invalid').addClass('is-valid');
+								} else {
+									this.setCustomValidity('Please enter at least 5 words.');
+									$(this).removeClass('is-valid').addClass('is-invalid');
+								}
+								updateWordCounter(content);
+								if (wordCount < 1) {
+									setTimeout(() => {
+										$('#comment-form')[0].reset();
+										$('#comment-form').removeClass('was-validated');
+										$('#Comment_content').removeClass('is-valid');
+										$('#Comment_content').removeClass('is-invalid');
+										updateWordCounter('');
+									}, 100);
+
+								}
+							});
+
+							function updateWordCounter(text) {
+								var words = text.trim().split(/\s+/);
+								var wordCount = words.filter(word => word.length > 0).length;
+								var wordsLeft = maxWords - wordCount;
+
+								$('#word-counter').text(`${wordCount} words, ${wordsLeft} words left`);
+
+								if (wordCount >= minWords && wordCount <= maxWords) {
+									$('#Comment_content').removeClass('is-invalid').addClass('is-valid');
+									$('#Comment_content')[0].setCustomValidity('');
+								} else {
+									$('#Comment_content').removeClass('is-valid').addClass('is-invalid');
+									$('#Comment_content')[0].setCustomValidity('Please enter at least 5 words and no more than 100 words.');
+								}
+							}
+							(function () {
+								'use strict';
+								window.addEventListener('load', function () {
+									var forms = document.getElementsByClassName('needs-validation');
+									var validation = Array.prototype.filter.call(forms, function (form) {
+										form.addEventListener('submit', function (event) {
+											if (form.checkValidity() === false) {
+												event.preventDefault();
+												event.stopPropagation();
+											}
+											form.classList.add('was-validated');
+										}, false);
+									});
+								}, false);
+							})();
+
+							$('#comment-form').on('submit', function (e) {
+								e.preventDefault(); // Prevent the default form submission
+
+								$.ajax({
+									type: 'POST',
+									url: '<?php echo Yii::app()->createUrl("comment/create"); ?>',
+									data: $(this).serialize(),
+									success: function (response) {
+										let res = JSON.parse(response);
+										if (res.success) {
+											Swal.fire({
+												icon: 'success',
+												title: 'Comment Added',
+												text: 'Your comment has been added successfully!',
+											}).then(() => {
+												let newCommentSlide = `
+																											<div class="swiper-slide">
+																												<div class="card mb-3">
+																													<div class="card-body">
+																														<h5 class="card-title">${res.comment.author.username}</h5>
+																														<p class="card-text">${res.comment.content}</p>
+																														<p class="card-text">
+																															<small class="text-muted">${res.comment.created_at}</small>
+																														</p>
+																													</div>
+																												</div>
+																											</div>`;
+												let swiper = document.querySelector('.swiper-container').swiper;
+												swiper.appendSlide(newCommentSlide);
+												swiper.update();
+												$('#comment-form')[0].reset();
+												$('#comment-form').removeClass('was-validated');
+												$('#Comment_content').removeClass('is-valid');
+												$('#Comment_content').removeClass('is-invalid');
+												updateWordCounter('');
+											});
+										} else {
+											Swal.fire({
+												icon: 'error',
+												title: 'Error',
+												text: res.message || 'An error occurred while adding your comment.',
+											});
+										}
+									},
+									error: function () {
+										Swal.fire({
+											icon: 'error',
+											title: 'Error',
+											text: 'An error occurred while adding your comment.',
+										});
+									}
+								});
+							});
+						});
+					</script>
+
+
 				<?php } else if (!Yii::app()->user->isGuest) { ?>
 						<h4>To Add your Comment Please :</h4>
 						<a href="<?php echo Yii::app()->createUrl('user/verification'); ?>"

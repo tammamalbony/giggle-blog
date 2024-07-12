@@ -73,6 +73,9 @@ main {
     flex-direction: column;
     font-size: 12px !important;
 }
+.comment-contnet-dispaly{
+    max-width:300px;
+}
 .textGM {
     background-image: var(--g-primery);
     -webkit-background-clip: text;
@@ -745,6 +748,7 @@ svg text {
 }
 .swiper-container{
     overflow:hidden;
+    padding: 10px;
 }
 
 .switch {
