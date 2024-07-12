@@ -20,7 +20,7 @@ class BlogPostController extends Controller
 			),
 			array(
 				'allow', // allow authenticated user to perform 'admin', 'create', 'update', 'delete', 'myposts', 'toggleVisibility'
-				'actions' => array('admin', 'create', 'save', 'update', 'edit', 'delete', 'myposts', 'toggleVisibility', 'uploadImage', 'checkImageExists','getLikes'),
+				'actions' => array('admin', 'create', 'save', 'update', 'edit', 'delete', 'myposts', 'toggleVisibility', 'uploadImage', 'checkImageExists', 'getLikes', 'realTimePosts'),
 				'users' => array('@'),
 				'expression' => '$user->getState("isVerified") == 1', // Only allow verified users
 			),
@@ -39,11 +39,14 @@ class BlogPostController extends Controller
 		}
 		$commentModel = new Comment;
 		$category = $model->category;
-		$this->render('view', array(
-			'model' => $model,
-			'commentModel' => $commentModel,
-			'category' => $category,
-		));
+		$this->render(
+			'view',
+			array(
+				'model' => $model,
+				'commentModel' => $commentModel,
+				'category' => $category,
+			)
+		);
 	}
 
 	public function actionDelete()
@@ -477,15 +480,71 @@ class BlogPostController extends Controller
 	}
 
 	public function actionGetLikes($id)
-    {
-        $post = $this->loadModel($id);
-        $likes = $post->getLikes();
-        $usernames = array_map(function($like) {
-            return $like->user->username;
-        }, $likes);
-        
-        echo CJSON::encode($usernames);
-        Yii::app()->end();
-    }
+	{
+		$post = $this->loadModel($id);
+		$likes = $post->getLikes();
+		$usernames = array_map(function ($like) {
+			return $like->user->username;
+		}, $likes);
+
+		echo CJSON::encode($usernames);
+		Yii::app()->end();
+	}
+	public function actionRealTimePosts()
+	{
+
+		if (Yii::app()->user->getState('isVerified') != 1) {
+			throw new CHttpException(403, 'You are not authorized to perform this action.');
+		}
+
+		$query = isset($_GET['query']) ? $_GET['query'] : '';
+
+		$letters = explode(' ', $query);
+		$likePattern = '';
+		foreach ($letters as $letter) {
+			$likePattern .= $letter . '% ';
+		}
+		$likePattern = rtrim($likePattern);
+
+
+		$sql = "
+				SELECT 
+					bp.*, 
+					u.username, 
+					COUNT(DISTINCT c.id) AS comments_count, 
+					COUNT(DISTINCT l.id) AS likes_count, 
+					cat.name AS category_name,
+					cat.icon
+				FROM 
+					blog_post bp
+					JOIN user u ON bp.author_id = u.id
+					LEFT JOIN comment c ON c.post_id = bp.id
+					LEFT JOIN `like` l ON l.post_id = bp.id
+					JOIN category cat ON bp.category_id = cat.id
+					INNER JOIN (
+						SELECT author_id
+						FROM blog_post
+						GROUP BY author_id
+						HAVING COUNT(*) >= 2
+					) AS authors ON bp.author_id = authors.author_id
+				WHERE 
+					bp.visibility = 1 
+					AND (bp.title LIKE :likePattern OR bp.title LIKE :query OR bp.description LIKE :query OR bp.content LIKE :query)
+				GROUP BY 
+					bp.id
+				HAVING 
+					comments_count > 0
+				ORDER BY 
+					bp.created_at DESC;
+			";
+		$command = Yii::app()->db->createCommand($sql);
+		$command->bindValue(':likePattern', $likePattern, PDO::PARAM_STR);
+		$command->bindValue(':query', '%' . $query . '%', PDO::PARAM_STR);
+		$posts = $command->queryAll();
+		echo CJSON::encode($posts);
+		Yii::app()->end();
+	}
+
+
 
 }

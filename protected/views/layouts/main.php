@@ -68,6 +68,9 @@
 	<header id="header" class="header fixed-top d-flex align-items-center">
 		<div class="container-fluid d-flex align-items-center justify-content-between">
 
+			<div id="real-time-posts">
+				<!-- The posts will be loaded at this div -->
+			</div>
 			<a href="<?php echo Yii::app()->createUrl('site/index'); ?>"
 				class="logo d-flex align-items-center me-auto me-lg-0">
 				<img src="<?php echo Yii::app()->request->baseUrl; ?>/custom/img/logoB.png" alt="Giggle Logo">
@@ -125,10 +128,12 @@
 					<li><a href="<?php echo Yii::app()->createUrl('user/register'); ?>">Register</a></li>
 				<?php } ?>
 			</nav>
-			<div class="input-group flex-nowrap SearchInput">
-				<input type="text" class="form-control" id="SearchInput" placeholder="Search">
-				<i class="bi bi-search textGM"></i>
-			</div>
+			<?php if (isset($_ENV['REAL_TIME_SEARCH']) && strtoupper($_ENV['REAL_TIME_SEARCH']) === "TRUE") { ?>
+				<div class="input-group flex-nowrap SearchInput">
+					<input type="text" class="form-control" id="SearchInput" placeholder="Real-Time Search">
+					<i class="bi bi-search textGM"></i>
+				</div>
+			<?php } ?>
 			<?php if (Yii::app()->user->isGuest) { ?>
 				<a class="btn-book-a-table d-none d-md-block" href="<?php echo Yii::app()->createUrl('site/login'); ?>"
 					id="loginLink">Login</a>
@@ -144,6 +149,11 @@
 
 		</div>
 	</header>
+	<div class="container" id="post-container" style="margin-top:100px">
+		<div class="row">
+			<!-- The posts will be loaded at this div -->
+		</div>
+	</div>
 
 	<main id="main">
 
@@ -210,17 +220,7 @@
 		</div>
 
 	</footer>
-	<script>
-		var clickableCards = document.querySelectorAll(".clickable-card");
-		clickableCards.forEach(function (card) {
-			card.addEventListener("click", function () {
-				var link = card.dataset.link;
-				if (link) {
-					window.location.href = link;
-				}
-			});
-		});
-	</script>
+
 	<a href="#" class="scroll-top d-flex align-items-center justify-content-center"><i
 			class="bi bi-arrow-up-short"></i></a>
 
@@ -267,6 +267,110 @@
 
 			<?php } ?>
 		});
+	</script>
+	<script>
+		var clickableCards = document.querySelectorAll(".clickable-card");
+		clickableCards.forEach(function (card) {
+			card.addEventListener("click", function () {
+				var link = card.dataset.link;
+				if (link) {
+					window.location.href = link;
+				}
+			});
+		});
+	</script>
+	<script>
+		let upload_dir = '<?php echo isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads"; ?>';
+		let previousQuery = '';
+		let intervalId;
+		document.getElementById('SearchInput').addEventListener('input', function () {
+			var inputText = this.value;
+
+			if (inputText.length > 2) {
+				document.getElementById('post-container').style.display = 'block';
+				document.getElementById('main').style.display = 'none';
+
+				if (intervalId) {
+					clearInterval(intervalId);
+				}
+				searchFunction(inputText)
+				intervalId = setInterval(function () {
+					searchFunction(inputText, <?= isset($_ENV['REAL_TIME_UPDATE']) && strtoupper($_ENV['REAL_TIME_UPDATE']) === "TRUE" ? 'true' : 'false'; ?>);
+				}, <?php echo isset($_ENV['INTERVAL_TIME']) ? $_ENV['INTERVAL_TIME'] : 5000; ?>);
+			} else {
+				document.getElementById('post-container').style.display = 'none';
+				document.getElementById('main').style.display = 'block';
+
+				if (intervalId) {
+					clearInterval(intervalId);
+				}
+			}
+		});
+		function setupClickableCards() {
+			var clickableCards = document.querySelectorAll(".clickable-card");
+			clickableCards.forEach(function (card) {
+				card.addEventListener("click", function () {
+					var link = card.dataset.link;
+					if (link) {
+						window.location.href = link;
+					}
+				});
+			});
+		}
+		function searchFunction(query, any = false) {
+			if (query !== previousQuery || any == true) {
+				console.log('Searching for:', query);
+				fetchPosts(query);
+				previousQuery = query;
+			}
+		}
+		function fetchPosts(query) {
+			$.ajax({
+				url: '<?php echo Yii::app()->createUrl('blogPost/RealTimePosts'); ?>',
+				method: 'GET',
+				data: { query: query },
+				dataType: 'json',
+				success: function (data) {
+					$('#post-container .row').html(renderPosts(data));
+					setupClickableCards();
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					console.error('Error fetching posts:', textStatus, errorThrown);
+					$('#post-container .row').html('<p>Error loading posts.</p>');
+				}
+			});
+		}
+
+		function renderPosts(posts) {
+			return posts.map(post => `
+				<div class="col-md-4 col-sm-12 card-col-container mb-2" data-id="${post.id}">
+					<div class="card mb-3">
+						<div class="row g-0 position-relative">
+							<img src="/${upload_dir}/${post.image}" class="card-img-top clickable-card" data-link="/index.php/blogPost/view/id/${post.id}" alt="${post.title}">
+							<div class="card-body">
+								<h5 class="card-title clickable-card" data-link="/index.php/blogPost/view/id/${post.id}">${post.title}</h5>
+								<p class="card-text clickable-card" data-link="/index.php/blogPost/view/id/${post.id}"><small>Author: ${post.username}</small></p>
+								<p class="card-text clickable-card" data-link="/index.php/blogPost/view/id/${post.id}">${post.description}</p>
+								<div class="d-flex justify-content-between align-items-center mb-2">
+									<img class="category-icon img-fluid user_image " src="/${upload_dir}/${post.icon}"/>
+									<small class="text-muted">Category: ${post.category_name}</small>
+								</div>
+								<div class="d-flex justify-content-between clickable-card" data-link="/index.php/blogPost/view/id/${post.id}">
+									<div><small>${new Date(post.created_at).toLocaleDateString()}</small></div>
+									<div><small>${new Date(post.created_at).toLocaleTimeString()}</small></div>
+								</div>
+								<div class="d-flex justify-content-between">
+									<small>Comments: ${post.comments_count}</small>
+									<small>Likes: ${post.likes_count}</small>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			`).join('');
+		}
+
+
 	</script>
 </body>
 
