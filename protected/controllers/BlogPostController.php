@@ -20,7 +20,7 @@ class BlogPostController extends Controller
 			),
 			array(
 				'allow', // allow authenticated user to perform 'admin', 'create', 'update', 'delete', 'myposts', 'toggleVisibility'
-				'actions' => array('admin', 'create', 'save', 'update', 'edit', 'delete', 'myposts', 'toggleVisibility', 'uploadImage', 'checkImageExists','getLikes'),
+				'actions' => array('admin', 'create', 'save', 'update', 'edit', 'delete', 'myposts', 'toggleVisibility', 'uploadImage', 'checkImageExists','getLikes','realTimePosts'),
 				'users' => array('@'),
 				'expression' => '$user->getState("isVerified") == 1', // Only allow verified users
 			),
@@ -487,5 +487,29 @@ class BlogPostController extends Controller
         echo CJSON::encode($usernames);
         Yii::app()->end();
     }
+	public function actionRealTimePosts() {
+		if (Yii::app()->user->getState('isVerified') != 1) {
+			throw new CHttpException(403, 'You are not authorized to perform this action.');
+		}
 
+		$sql = "
+			SELECT bp.*
+			FROM blog_post bp
+			JOIN comment c ON c.blog_post_id = bp.id
+			JOIN (
+				SELECT author_id, COUNT(*) AS post_count
+				FROM blog_post
+				GROUP BY author_id
+				HAVING post_count >= 2
+			) AS authors ON bp.author_id = authors.author_id
+			WHERE bp.visibility = 1
+			GROUP BY bp.id
+			ORDER BY bp.created_at DESC
+		";
+		$posts = Yii::app()->db->createCommand($sql)->queryAll();
+		echo CJSON::encode($posts);
+		Yii::app()->end();
+	}
+	
+	
 }

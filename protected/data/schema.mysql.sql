@@ -122,3 +122,9 @@ INSERT INTO `comment` (`post_id`, `author_id`, `content`, `created_at`) VALUES
 (5, 2, 'Absolutely love this playlist!', CURRENT_TIMESTAMP),
 (3, 1, 'I\'m definitely going to share this with my friends.', CURRENT_TIMESTAMP),
 (5, 3, 'Can\'t stop listening to these!', CURRENT_TIMESTAMP);
+
+
+CREATE INDEX idx_blog_post_author_id ON blog_post(author_id);
+CREATE INDEX idx_blog_post_visibility ON blog_post(visibility);
+CREATE INDEX idx_blog_post_created_at ON blog_post(created_at);
+CREATE INDEX idx_comment_blog_post_id ON comment(blog_post_id);
