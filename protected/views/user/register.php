@@ -310,16 +310,32 @@ $this->breadcrumbs = array('Register', );
                     processData: false,
                     contentType: false,
                     success: function (response) {
-                        Swal.fire({
-                            title: 'Success!',
-                            text: 'Thank you for registering. Please check your email to verify your account.',
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.href = '<?php echo Yii::app()->createUrl("site/login"); ?>';
+                        var jsonResponse = JSON.parse(response);
+                        if (jsonResponse.status === 'success') {
+                            Swal.fire({
+                                title: 'Success!',
+                                text: jsonResponse.message,
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = '<?php echo Yii::app()->createUrl("site/login"); ?>';
+                                }
+                            });
+                        } else {
+                            var errorMessage = jsonResponse.message;
+                            if (jsonResponse.errors) {
+                                errorMessage += '\n' + Object.values(jsonResponse.errors).flat().join('\n');
                             }
-                        });
+                            Swal.fire({
+                                title: 'Error!',
+                                text: errorMessage,
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                        submitButton.prop('disabled', false).text('Sign Up');
+                        submitButton.removeClass("loading-btn");
                     },
                     error: function (response) {
                         Swal.fire({
@@ -336,10 +352,10 @@ $this->breadcrumbs = array('Register', );
             }
 
             form.classList.add('was-validated');
-        }, false);
+        });
+
 
         updateSubmitButtonState();
-
-
     });
+
 </script>

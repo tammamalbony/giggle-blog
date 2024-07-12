@@ -179,8 +179,32 @@ class UserController extends Controller
 		if (isset($_POST['User'])) {
 			$model->attributes = $_POST['User'];
 			$model->verification_token = md5(uniqid(mt_rand(), true));
+
+			// Check if email is unique
+			$existingUserByEmail = User::model()->findByAttributes(['email' => $model->email]);
+			if ($existingUserByEmail) {
+				$response['message'] = 'Email is already taken.';
+				echo json_encode($response);
+				Yii::app()->end();
+			}
+
+			// Check if username is unique
+			$existingUserByUsername = User::model()->findByAttributes(['username' => $model->username]);
+			if ($existingUserByUsername) {
+				$response['message'] = 'Username is already taken.';
+				echo json_encode($response);
+				Yii::app()->end();
+			}
+
+			// Check if password and password_repeat match
+			if ($model->password !== $_POST['User']['password_repeat']) {
+				$response['message'] = 'Passwords do not match.';
+				echo json_encode($response);
+				Yii::app()->end();
+			}
+
 			if ($model->save()) {
-				if (isset($_ENV['IS_EMAIL_ENABEL']) &&  strtoupper($_ENV['IS_EMAIL_ENABEL'])  === "TRUE") {
+				if (isset($_ENV['IS_EMAIL_ENABEL']) && strtoupper($_ENV['IS_EMAIL_ENABEL']) === "TRUE") {
 					$verificationUrl = $this->createAbsoluteUrl('user/verify', array('token' => $model->verification_token));
 					Yii::log("Verification URL: $verificationUrl", CLogger::LEVEL_INFO);
 					$body = "Please click on the following link to verify your account: <a href='{$verificationUrl}'>Verify Account</a>";
@@ -191,7 +215,7 @@ class UserController extends Controller
 							$response['message'] = 'Error while sending verification email.';
 						}
 					} catch (\Throwable $th) {
-						Yii::app()->user->setFlash('error', 'Exception while sending verification email.');
+						$response['message'] = 'Exception while sending verification email.';
 						Yii::log(
 							"Exception while sending verification email: " . $th->getMessage() . "\n" .
 							"File: " . $th->getFile() . "\n" .
@@ -201,18 +225,19 @@ class UserController extends Controller
 							'application'
 						);
 					}
-
 				} else {
-					Yii::app()->user->setFlash('success', 'Thank you for registering. A new verification email has been mocked up.');
+					$response = ['status' => 'success', 'message' => 'Thank you for registering. Verification email has beed mocked up because email server is not enabled.'];
 				}
 			} else {
 				$response['message'] = 'Error while saving user information.';
+				$response['errors'] = $model->getErrors();
 			}
 		}
 
-		echo CJSON::encode($response);
+		echo json_encode($response);
 		Yii::app()->end();
 	}
+
 	public function actionRegister()
 	{
 		$model = new User;
@@ -272,8 +297,8 @@ class UserController extends Controller
 		if ($user && !$user->is_verified) {
 			$user->verification_token = md5(uniqid(rand(), true));
 			if ($user->save(false)) {
-				
-				if (isset($_ENV['IS_EMAIL_ENABEL']) &&  strtoupper($_ENV['IS_EMAIL_ENABEL']) === "TRUE") {
+
+				if (isset($_ENV['IS_EMAIL_ENABEL']) && strtoupper($_ENV['IS_EMAIL_ENABEL']) === "TRUE") {
 					try {
 						$verificationUrl = Yii::app()->createAbsoluteUrl('user/verify', ['token' => $user->verification_token]);
 						$body = "Please click on the following link to verify your account: <a href='{$verificationUrl}'>Verify Account</a>";
