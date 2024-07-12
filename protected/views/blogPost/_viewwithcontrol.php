@@ -11,7 +11,11 @@
                 data-id="<?php echo $data->id; ?>">
                 <i class="bi <?php echo $isLiked ? 'bi-hand-thumbs-down' : 'bi-hand-thumbs-up'; ?>"></i>
             </button>
-            <img src="<?php echo "/";echo isset($_ENV['UPLOAD_DIR']) ?  $_ENV['UPLOAD_DIR'] : "uploads"; echo "/" ; echo CHtml::encode($data->image); ?>" class="card-img-top clickable-card"
+            <img src="<?php echo "/";
+            echo isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads";
+            echo "/";
+            echo CHtml::encode($data->image); ?>"
+                class="card-img-top clickable-card"
                 data-link="<?php echo $this->createUrl('view', array('id' => $data->id)); ?>"
                 alt="<?php echo CHtml::encode($data->title); ?>">
             <div class="card-body ">
@@ -23,7 +27,14 @@
                     data-link="<?php echo $this->createUrl('view', array('id' => $data->id)); ?>">
                     <i class="bi bi-person-fill text-secondary"></i>
                     <small class="text-body-secondary">Author:
-                        <?php echo CHtml::encode($data->author->username); ?></small>
+                        <?php
+                        if ($data->author->username == Yii::app()->user->name) {
+                            echo '<strong class="text-warning">you</strong>';
+                        } else {
+                            echo CHtml::encode($data->author->username);
+                        }
+                        ?>
+                        </small>
                 </p>
                 <p class="card-text clickable-card"
                     data-link="<?php echo $this->createUrl('view', array('id' => $data->id)); ?>">
@@ -48,8 +59,8 @@
                 <div class="d-flex justify-content-between">
                     <div>
                         <strong>Visibility:
-                            <span
-                                class="visibility-status"><?php echo CHtml::encode($data->visibility == 1 ? 'Public' : 'Private'); ?></span></strong>
+                            <span class="visibility-status"
+                                data-id="<?php echo $data->id; ?>"><?php echo CHtml::encode($data->visibility == 1 ? 'Public' : 'Private'); ?></span></strong>
                         <?php if ($data->author_id == Yii::app()->user->id): ?>
                             <label class="switch">
                                 <input type="checkbox" class="visibility-toggle" data-id="<?php echo $data->id; ?>" <?php echo $data->visibility == 1 ? 'checked' : ''; ?>>

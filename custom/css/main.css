@@ -269,6 +269,7 @@ section {
 .header.sticked {
   border-color: #fff;
   border-color: #eee;
+  box-shadow: 1px 2px 3px #486348;
 }
 
 .header .logo img {

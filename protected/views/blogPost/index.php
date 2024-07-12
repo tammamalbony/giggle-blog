@@ -35,7 +35,11 @@ $this->breadcrumbs = array(
 							<option value="">Select Author</option>
 							<?php foreach ($authors as $author): ?>
 								<option value="<?php echo $author->id; ?>" <?php echo (Yii::app()->request->getParam('author_id') == $author->id) ? 'selected' : ''; ?>>
-									<?php echo CHtml::encode($author->username); ?>
+									<?php if ($author->username == Yii::app()->user->name) { ?>
+										you
+									<?php } else { ?>
+										<?php echo CHtml::encode($author->username); ?>
+									<?php } ?>
 								</option>
 							<?php endforeach; ?>
 						</select>
@@ -129,6 +133,46 @@ $this->breadcrumbs = array(
 						icon: 'error',
 						title: 'Error',
 						text: 'An unexpected error occurred. Please try again.',
+					});
+				}
+			});
+		});
+		$(document).on('change', '.visibility-toggle', function () {
+			var postId = $(this).data('id');
+			var visibility = $(this).is(':checked') ? 1 : 0;
+
+			$.ajax({
+				type: 'POST',
+				url: '<?php echo Yii::app()->createUrl('blogPost/toggleVisibility'); ?>',
+				data: { id: postId, visibility: visibility },
+				success: function (response) {
+					response = JSON.parse(response);
+					if (response.status === 'success') {
+						$('.visibility-status[data-id="' + postId + '"]').text(visibility == 1 ? 'Public' : 'Private');
+						if (visibility == 0) {
+							$('.card-col-container[data-id="' + postId + '"]').remove();
+						}
+						Swal.fire({
+							title: 'Success',
+							text: 'Visibility updated successfully.',
+							icon: 'success',
+							confirmButtonText: 'OK'
+						});
+					} else {
+						Swal.fire({
+							title: 'Error',
+							text: response.message,
+							icon: 'error',
+							confirmButtonText: 'OK'
+						});
+					}
+				},
+				error: function () {
+					Swal.fire({
+						title: 'Error',
+						text: 'Failed to change visibility',
+						icon: 'error',
+						confirmButtonText: 'OK'
 					});
 				}
 			});

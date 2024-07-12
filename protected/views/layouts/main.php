@@ -45,8 +45,11 @@
 		rel="stylesheet">
 	<link href="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/sweetAlert2/sweetalert2.min.css"
 		rel="stylesheet">
-	<link href="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/summernote/summernote.min.css"
-		rel="stylesheet">
+	<?php if (isset($_ENV['EDITOR_ENABLE']) && strtoupper($_ENV['EDITOR_ENABLE']) === "TRUE") {
+		?>
+		<link href="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/summernote/summernote.min.css"
+			rel="stylesheet">
+	<?php } ?>
 	<!-- <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/main.css"> -->
 	<!-- <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/form.css"> -->
 
@@ -141,7 +144,7 @@
 	</header>
 
 	<main id="main">
-		
+
 		<?php echo $content; ?>
 	</main>
 	<footer id="footer" class="footer mt-5 mb-0 mx-0">
@@ -228,17 +231,20 @@
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/swiper/swiper-bundle.min.js"></script>
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/php-email-form/validate.js"></script>
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/sweetAlert2/sweetalert2.all.min.js"></script>
-	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/summernote/summernote.min.js"></script>
+	<?php if (isset($_ENV['EDITOR_ENABLE']) && strtoupper($_ENV['EDITOR_ENABLE']) === "TRUE") {
+		?>
+		<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/vendor/summernote/summernote.min.js"></script>
+	<?php } ?>
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/custom/js/main.js"></script>
 	<script>
-		 <?php if (Yii::app()->user->hasFlash('error')): ?>
-        Swal.fire({
-            title: 'Error!',
-            text: '<?php echo Yii::app()->user->getFlash('error'); ?>',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-        <?php endif; ?>
+		<?php if (Yii::app()->user->hasFlash('error')): ?>
+			Swal.fire({
+				title: 'Error!',
+				text: '<?php echo Yii::app()->user->getFlash('error'); ?>',
+				icon: 'error',
+				confirmButtonText: 'OK'
+			});
+		<?php endif; ?>
 	</script>
 </body>
 

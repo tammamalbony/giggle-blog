@@ -143,4 +143,9 @@ class User extends CActiveRecord
 			return false;
 		}
     }
+
+	public function getIsVerified()
+    {
+        return $this->is_verified;
+    }
 }

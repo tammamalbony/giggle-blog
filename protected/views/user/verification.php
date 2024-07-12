@@ -72,9 +72,9 @@ $this->breadcrumbs = array(
                 <?php
             } else{ ?>
                 <div class="mt-2">
-                    <p>The email server is not enabled or not configured.
+                    <p class="text-danger">The email server is not enabled or not configured so : 
                         <a href="<?php echo $this->createUrl('user/verifyNow', array('id' => Yii::app()->user->id)); ?>"
-                            class="btn btn-primary" id="verifyNowBtn">click here to verify your account now</a>.
+                            class="btn btn-primary" id="verifyNowBtn">click here to verify your account now</a>
                     </p>
                 </div>
                 <script>

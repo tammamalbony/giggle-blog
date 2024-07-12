@@ -37,8 +37,13 @@ class BlogPostController extends Controller
 		if ($model->visibility == 0 && $model->author_id !== Yii::app()->user->id) {
 			throw new CHttpException(403, 'You are not authorized to view this post.');
 		}
-
-		$this->render('view', array('model' => $model));
+		$commentModel = new Comment;
+		$category = $model->category;
+		$this->render('view', array(
+			'model' => $model,
+			'commentModel' => $commentModel,
+			'category' => $category,
+		));
 	}
 
 	public function actionDelete()

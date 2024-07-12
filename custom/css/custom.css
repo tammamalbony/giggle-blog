@@ -41,7 +41,38 @@ main {
     left: 0.5rem;
     z-index: 90;
 }
-
+.cat-image{
+    max-height: 200px;
+    float: right;
+    border-radius: 12px;
+    box-shadow: 1px 2px 3px #486348;
+}
+.cover-image{
+    z-index: -1;
+    position: relative;
+    border-radius: 25px;
+    max-height: 400px;
+    min-height: 400px;
+    width: 100%;
+    margin-top: 100px;
+    background-repeat: repeat;
+    background-size: cover;
+    box-shadow: 1px 2px 3px #486348;
+    background-position: center center;
+}
+.comments-container{
+    /* max-height: 159px; */
+    position: relative;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+.favBtn{
+    /* z-index: 9999; */
+}
+.comments-container .card-body{
+    flex-direction: column;
+    font-size: 12px !important;
+}
 .textGM {
     background-image: var(--g-primery);
     -webkit-background-clip: text;
@@ -393,6 +424,7 @@ input {
 .card {
     border-radius: 20px;
     height: 100%;
+    box-shadow: 1px 2px 3px #486348;
 }
 
 .card>div {
@@ -410,6 +442,7 @@ input {
     color: white;
     width: fit-content;
     width: 40px;
+    box-shadow: 1px 2px 3px #486348;
     height: 40px;
 }
 
@@ -612,6 +645,8 @@ svg {
 .EditPostbtn{
     position: absolute;
     top: 15px;
+    box-shadow: 1px 2px 3px #486348;
+    border-radius: 100rem;
 }
 @media (max-width: 991px) {
     .filter-form .row ,.filter-form .d-md-none {
@@ -705,9 +740,12 @@ svg text {
 }
 
 .swiper-wrapper {
-    padding: 4rem !important;
+    /* padding: 4rem !important; */
+    /* overflow: hidden; */
 }
-
+.swiper-container{
+    overflow:hidden;
+}
 
 .switch {
     position: relative;
