@@ -280,6 +280,30 @@ class BlogPostController extends Controller
 			$model = new BlogPost;
 			$model->attributes = $_POST['BlogPost'];
 			$model->author_id = Yii::app()->user->id;
+
+			if (isset($_FILES['BlogPost'])) {
+				if (isset($_FILES['BlogPost']['name']['image']) && !empty($_FILES['BlogPost']['name']['image'])) {
+					$imageFile = CUploadedFile::getInstance($model, 'image');
+					if ($imageFile) {
+						$imageFileName = $imageFile->name;
+						$imageFilePath = Yii::getPathOfAlias('webroot') . "/" . (isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads") . "/" . $imageFileName;
+						if ($imageFile->saveAs($imageFilePath)) {
+							$model->image = Yii::app()->baseUrl . "/" . (isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads") . "/" . $imageFileName;
+						}
+					}
+				}
+				if (isset($_FILES['BlogPost']['name']['cover_image']) && !empty($_FILES['BlogPost']['name']['cover_image'])) {
+					$coverImageFile = CUploadedFile::getInstance($model, 'cover_image');
+					if ($coverImageFile) {
+						$coverImageFileName = $coverImageFile->name;
+						$coverImageFilePath = Yii::getPathOfAlias('webroot') . "/" . (isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads") . "/" . $coverImageFileName;
+						if ($coverImageFile->saveAs($coverImageFilePath)) {
+							$model->cover_image = Yii::app()->baseUrl . "/" . (isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads") . "/" . $coverImageFileName;
+						}
+					}
+				}
+			}
+
 			if ($model->validate() && $model->save()) {
 				echo CJSON::encode(['status' => 'success', 'id' => $model->id]);
 			} else {
@@ -289,6 +313,7 @@ class BlogPostController extends Controller
 		}
 		throw new CHttpException(400, 'Invalid request.');
 	}
+
 	public function actionUpdate()
 	{
 		if (Yii::app()->request->isAjaxRequest && isset($_POST['BlogPost'])) {
@@ -312,7 +337,7 @@ class BlogPostController extends Controller
 				if (isset($_FILES['BlogPost']['name']['image']) && !empty($_FILES['BlogPost']['name']['image'])) {
 					$imageFile = CUploadedFile::getInstance($model, 'image');
 					if ($imageFile) {
-						$imageFileName = time() . '_' . $imageFile->name;
+						$imageFileName = $imageFile->name;
 						$imageFilePath = Yii::getPathOfAlias('webroot') . "/" . isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads" . "/" . $imageFileName;
 						if ($imageFile->saveAs($imageFilePath)) {
 							$model->image = Yii::app()->baseUrl . "/" . isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads" . "/" . $imageFileName;
@@ -322,7 +347,7 @@ class BlogPostController extends Controller
 				if (isset($_FILES['BlogPost']['name']['cover_image']) && !empty($_FILES['BlogPost']['name']['cover_image'])) {
 					$coverImageFile = CUploadedFile::getInstance($model, 'cover_image');
 					if ($coverImageFile) {
-						$coverImageFileName = time() . '_' . $coverImageFile->name;
+						$coverImageFileName = $coverImageFile->name;
 						$coverImageFilePath = Yii::getPathOfAlias('webroot') . "/" . isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads" . "/" . $coverImageFileName;
 						if ($coverImageFile->saveAs($coverImageFilePath)) {
 							$model->cover_image = Yii::app()->baseUrl . "/" . isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads" . "/" . $coverImageFileName;
@@ -358,19 +383,19 @@ class BlogPostController extends Controller
 	{
 		$output = ['status' => 'error', 'message' => 'File upload failed'];
 		Yii::log('Starting file upload process', 'info');
-	
+
 		if (isset($_FILES['image']) || isset($_FILES['cover_image'])) {
 			Yii::log('File found in request', 'info');
-			
+
 			// Check which file is being uploaded
 			$file = isset($_FILES['image']) ? CUploadedFile::getInstanceByName('image') : CUploadedFile::getInstanceByName('cover_image');
-	
+
 			if ($file) {
 				Yii::log('File instance created', 'info');
 				$fileName = $file->name;
 				$uploadDir = isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads";
 				$filePath = Yii::getPathOfAlias('webroot') . "/$uploadDir/" . $fileName;
-	
+
 				if (file_exists($filePath)) {
 					Yii::log('File already exists', 'error');
 					$output['message'] = 'File with the same name already exists.';
@@ -391,56 +416,60 @@ class BlogPostController extends Controller
 			Yii::log('No file uploaded', 'error');
 			$output['message'] = 'No file uploaded.';
 		}
-	
+
 		echo CJSON::encode($output);
 		Yii::app()->end();
 	}
-	
+
 
 
 	public function actionCheckImageExists()
-{
-    $output = ['status' => 'error', 'message' => 'Invalid request'];
+	{
+		$output = ['status' => 'error', 'message' => 'Invalid request'];
 
-    if (isset($_POST['url'])) {
-        $url = $_POST['url'];
-        $base = isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads";
-        $filePath = Yii::getPathOfAlias('webroot') . "/" . $base . "/" . $url;
+		if (isset($_POST['url'])) {
+			$url = $_POST['url'];
+			if (empty($url)) {
+				$output = ['status' => 'error', 'message' => 'URL cannot be empty'];
+			} else {
+				$base = isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads";
+				$filePath = Yii::getPathOfAlias('webroot') . "/" . $base . "/" . $url;
 
-        if (file_exists($filePath)) {
-            $imageInfo = getimagesize($filePath);
-            $fileSize = filesize($filePath);
-            $mimeType = mime_content_type($filePath);
+				if (file_exists($filePath)) {
+					$imageInfo = getimagesize($filePath);
+					$fileSize = filesize($filePath);
+					$mimeType = mime_content_type($filePath);
 
-            $maxWidth = isset($_ENV['MAX_IMAGE_WIDTH']) ? $_ENV['MAX_IMAGE_WIDTH'] : 1023;
-            $maxHeight = isset($_ENV['MAX_IMAGE_HIGHT']) ? $_ENV['MAX_IMAGE_HIGHT'] : 1023;
-            $maxSize = 1024 * (isset($_ENV['MAX_IMAGE_SIZE']) ? $_ENV['MAX_IMAGE_SIZE'] : 1023);
-            $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+					$maxWidth = isset($_ENV['MAX_IMAGE_WIDTH']) ? $_ENV['MAX_IMAGE_WIDTH'] : 1023;
+					$maxHeight = isset($_ENV['MAX_IMAGE_HIGHT']) ? $_ENV['MAX_IMAGE_HIGHT'] : 1023;
+					$maxSize = 1024 * (isset($_ENV['MAX_IMAGE_SIZE']) ? $_ENV['MAX_IMAGE_SIZE'] : 1023);
+					$allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
-            if ($imageInfo) {
-                $width = $imageInfo[0];
-                $height = $imageInfo[1];
+					if ($imageInfo) {
+						$width = $imageInfo[0];
+						$height = $imageInfo[1];
 
-                if ($width > $maxWidth || $height > $maxHeight) {
-                    $output = ['status' => 'error', 'message' => 'Image dimensions should not exceed ' . $maxWidth . 'px * ' . $maxHeight . 'px.'];
-                } elseif ($fileSize > $maxSize) {
-                    $output = ['status' => 'error', 'message' => 'Image size should not exceed ' . $maxSize . 'KB.'];
-                } elseif (!in_array($mimeType, $allowedMimeTypes)) {
-                    $output = ['status' => 'error', 'message' => 'File type must be an image.'];
-                } else {
-                    $output = ['status' => 'success', 'message' => 'File exists and is valid'];
-                }
-            } else {
-                $output = ['status' => 'error', 'message' => 'Invalid image file.'];
-            }
-        } else {
-            $output = ['status' => 'error', 'message' => 'File does not exist'];
-        }
-    }
+						if ($width > $maxWidth || $height > $maxHeight) {
+							$output = ['status' => 'error', 'message' => 'Image dimensions should not exceed ' . $maxWidth . 'px * ' . $maxHeight . 'px.'];
+						} elseif ($fileSize > $maxSize) {
+							$output = ['status' => 'error', 'message' => 'Image size should not exceed ' . $maxSize . 'KB.'];
+						} elseif (!in_array($mimeType, $allowedMimeTypes)) {
+							$output = ['status' => 'error', 'message' => 'File type must be an image.'];
+						} else {
+							$output = ['status' => 'success', 'message' => 'File exists and is valid'];
+						}
+					} else {
+						$output = ['status' => 'error', 'message' => 'Invalid image file.'];
+					}
+				} else {
+					$output = ['status' => 'error', 'message' => 'File does not exist'];
+				}
+			}
+		}
 
-    echo CJSON::encode($output);
-    Yii::app()->end();
-}
+		echo CJSON::encode($output);
+		Yii::app()->end();
+	}
 
 
 

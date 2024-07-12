@@ -101,7 +101,7 @@
 			</div>
 
 			<div class="row buttons">
-				<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save', array('class' => 'btn btn-primary btnmain mt-3')); ?>
+				<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save', array('class' => 'btn btn-primary btnmain mt-3', 'id' => 'submit-button')); ?>
 			</div>
 
 			<?php $this->endWidget(); ?>
@@ -169,14 +169,42 @@
 							if (data.message == "File does not exist") {
 								Swal.fire('warning!', "File does not exist At server ", 'warning');
 								$("#upload-" + hiddenFieldId + "-btn").show()
+								$("#clear-" + hiddenFieldId + "-btn").show()
+								$("#preview-" + hiddenFieldId + "-btn").show()
+								$("#preview-" + hiddenFieldId + "-btn").show()
+								$("#" + hiddenFieldId + "-file").addClass("is-invalid");
+								$("#" + hiddenFieldId + "-preview").hide()
+
 							}
 							else {
 								Swal.fire('Error!', data.message, 'error');
 								$("#upload-" + hiddenFieldId + "-btn").hide()
+								$("#clear-" + hiddenFieldId + "-btn").hide()
+								$("#preview-" + hiddenFieldId + "-btn").hide()
+								$("#" + hiddenFieldId + "-file").addClass("is-invalid");
+								$("#preview-" + hiddenFieldId + "-btn").hide()
+								$("#" + hiddenFieldId + "-preview").hide()
+
 							}
 						} else {
 							Swal.fire('Success!', data.message, 'success');
 							$("#upload-" + hiddenFieldId + "-btn").hide()
+							$("#clear-" + hiddenFieldId + "-btn").show()
+							$("#preview-" + hiddenFieldId + "-btn").show()
+							$("#" + hiddenFieldId + "-file").removeClass("is-invalid");
+							$("#" + hiddenFieldId + "-preview").show()
+							$("#" + hiddenFieldId + "-preview").attr('src', "<?php echo "/";
+							echo isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads";
+							echo "/"; ?>"+ file.name);
+							if(hiddenFieldId == "image" ){
+								document.getElementById('BlogPost_image').value = file.name;
+
+							}else if(hiddenFieldId == "cover-image"){
+								document.getElementById('BlogPost_cover_image').value = file.name;
+
+							}else{
+								Swal.fire('Error!', "Cant Get the Image New Value ", 'error');
+							}
 						}
 					},
 					error: function () {
@@ -299,6 +327,7 @@
 		}
 	});
 
+
 	$('#upload-image-btn').on('click', function () {
 		var fileInput = $('#image-file')[0];
 		if (fileInput.files.length === 0) {
@@ -318,8 +347,17 @@
 			success: function (response) {
 				var data = JSON.parse(response);
 				if (data.status === 'success') {
-					$('#BlogPost_image').val(data.url);
+					document.getElementById('BlogPost_image').value = data.url;
 					Swal.fire('Success!', 'Image uploaded successfully.', 'success');
+
+					$("#image-preview").attr('src', "<?php echo "/";
+					echo isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads";
+					echo "/"; ?>"+ data.url);
+					$("#image-preview").css('display', "inline-block");
+					$('#preview-image-btn').css('display', "inline-block");
+					$('#clear-image-btn').css('display', "inline-block");
+					$('#upload-image-btn').hide();
+
 					$('#image-file').removeClass('is-invalid').addClass('is-valid');
 				} else {
 					Swal.fire('Error!', data.message, 'error');
@@ -353,9 +391,17 @@
 			success: function (response) {
 				var data = JSON.parse(response);
 				if (data.status === 'success') {
-					$('#BlogPost_cover_image').val(data.url);
+					document.getElementById('BlogPost_cover_image').value = data.url;
 					Swal.fire('Success!', 'Cover image uploaded successfully.', 'success');
 					$('#cover-image-file').removeClass('is-invalid').addClass('is-valid');
+
+					$("#cover-image-preview").attr('src', "<?php echo "/";
+					echo isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads";
+					echo "/"; ?>"+ data.url);
+					$("#cover-image-preview").css('display', "inline-block");
+					$('#preview-cover-image-btn').css('display', "inline-block");
+					$('#clear-cover-image-btn').css('display', "inline-block");
+					$('#upload-cover-image-btn').hide();
 				} else {
 					Swal.fire('Error!', data.message, 'error');
 					$('#cover-image-file').addClass('is-invalid');
@@ -374,9 +420,10 @@
 
 		var form = $(this);
 		var valid = true;
-
-
-
+		var submitButton = $('#submit-button');
+		submitButton.prop('disabled', true).text('Submitting ...');
+		submitButton.addClass('loading-btn');
+		submitButton.val('Submitting ...');
 		form.find('input[type="text"], textarea').each(function () {
 			if (this.value.length < 3) {
 				$(this).addClass('is-invalid');
@@ -389,30 +436,44 @@
 		if (!valid || form[0].checkValidity() === false) {
 			event.stopPropagation();
 			form.addClass('was-validated');
+			submitButton.prop('disabled', false).text('Save');
+			submitButton.removeClass('loading-btn');
+			submitButton.val('Save');
+
 			return;
 		}
 
 		var imageUrl = $('#BlogPost_image').val();
 		var coverImageUrl = $('#BlogPost_cover_image').val();
-
 		function checkImageExists(url, callback) {
 			$.ajax({
 				url: '<?php echo Yii::app()->createUrl("blogPost/checkImageExists"); ?>',
 				type: 'POST',
 				data: { url: url },
 				success: function (response) {
+					submitButton.prop('disabled', false).text('Save');
+					submitButton.removeClass('loading-btn');
+					submitButton.val('Save');
 					var data = JSON.parse(response);
+					console.log(data.status === 'success');
 					callback(data.status === 'success');
 				},
 				error: function () {
+					submitButton.prop('disabled', false).text('Save');
+					submitButton.removeClass('loading-btn');
+					submitButton.val('Save');
+					form.removeClass('was-validated');
+
 					callback(false);
+
 				}
 			});
 		}
 
 		checkImageExists(imageUrl, function (imageExists) {
-			if (!imageExists) {
+			if (imageExists == false) {
 				Swal.fire('Error!', 'The image URL does not exist or is not an image.', 'error');
+				console.log("is-invalid #image-file");
 				$('#image-file').addClass('is-invalid');
 				return;
 			}
@@ -424,14 +485,22 @@
 					return;
 				}
 
-				var submitButton = $('.loading-btn');
-				submitButton.prop('disabled', true).text('Submitting...');
-				submitButton.addClass("loading-btn");
-
 				var formData = new FormData(form[0]);
 
 				$.ajax({
-					url: '<?php echo Yii::app()->createUrl("blogPost/update"); ?>',
+					<?php
+					 if(isset($isCreatForm) && $isCreatForm == true){
+						?> 
+							url: '<?php echo Yii::app()->createUrl("blogPost/save"); ?>',
+						<?php
+
+					 }else{
+						?> 
+							url: '<?php echo Yii::app()->createUrl("blogPost/update"); ?>',
+						<?php
+					 }
+					?>
+				
 					type: 'POST',
 					data: formData,
 					contentType: false,
@@ -452,14 +521,19 @@
 						} else {
 							Swal.fire('Error!', 'Form submission failed. Please try again.', 'error');
 							submitButton.prop('disabled', false).text('Save');
-							submitButton.removeClass("loading-btn");
+							submitButton.removeClass('loading-btn');
+							form.removeClass('was-validated');
+							submitButton.val('Save');
+
 						}
 					},
 					error: function (response) {
 						Swal.fire('Error!', 'Form submission failed. Please try again.', 'error');
 						console.error('Form submission failed:', response);
 						submitButton.prop('disabled', false).text('Save');
-						submitButton.removeClass("loading-btn");
+						submitButton.removeClass('loading-btn');
+						form.removeClass('was-validated');
+						submitButton.val('Save');
 					}
 				});
 			});
