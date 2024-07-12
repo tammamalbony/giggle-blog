@@ -32,11 +32,14 @@ return array(
 
 	// application components
 	'components'=>array(
-
+		'request' => array(
+            'enableCsrfValidation' => (isset($_ENV['CSRF_ENABLE']) && strtoupper($_ENV['CSRF_ENABLE']) === "TRUE"),
+        ),
 		'user'=>array(
 			// enable cookie-based authentication
 			'allowAutoLogin'=>true,
 			'loginUrl' => array('user/login'),
+			
 		),
 
 		// uncomment the following to enable URLs in path-format

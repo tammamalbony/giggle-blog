@@ -34,12 +34,12 @@ class CommentController extends Controller
 			),
 			array(
 				'allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions' => array('create', 'update'),
+				'actions' => array('create', 'update', 'delete'),
 				'users' => array('@'),
 			),
 			array(
 				'allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions' => array('admin', 'delete'),
+				'actions' => array('admin'),
 				'users' => array('admin'),
 			),
 			array(
@@ -69,6 +69,9 @@ class CommentController extends Controller
 	 */
 	public function actionCreate()
 	{
+		if (Yii::app()->user->getState('isVerified') != 1) {
+			throw new CHttpException(403, 'You are not authorized to perform this action.');
+		}
 		$model = new Comment;
 
 		if (isset($_POST['Comment'])) {
@@ -92,9 +95,11 @@ class CommentController extends Controller
 			}
 		}
 
-		$this->render('create', array(
-			'model' => $model,
-		)
+		$this->render(
+			'create',
+			array(
+				'model' => $model,
+			)
 		);
 	}
 
@@ -133,12 +138,48 @@ class CommentController extends Controller
 	 */
 	public function actionDelete($id)
 	{
-		$this->loadModel($id)->delete();
+		if (Yii::app()->user->getState('isVerified') != 1) {
+			throw new CHttpException(403, 'You are not authorized to perform this action.');
+		}
 
-		// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-		if (!isset($_GET['ajax']))
-			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+		if (Yii::app()->request->isPostRequest) {
+			// // CSRF Protection
+			// $csrfToken = Yii::app()->request->getPost('YII_CSRF_TOKEN');
+			// if (!Yii::app()->request->validateCsrfToken($csrfToken)) {
+			// 	throw new CHttpException(401, 'Invalid CSRF token.');
+			// }
+	
+
+			$comment = $this->loadModel($id);
+			$post = BlogPost::model()->findByPk($comment->post_id);
+
+			if ($post->author_id !== Yii::app()->user->id) {
+				echo CJSON::encode(['status' => 'error', 'message' => 'You are not authorized to delete comments on this post.']);
+				Yii::app()->end();
+			}
+
+			$transaction = Yii::app()->db->beginTransaction();
+			try {
+				if ($comment->delete()) {
+					$transaction->commit();
+					echo CJSON::encode(['status' => 'success']);
+				} else {
+					$transaction->rollback();
+					echo CJSON::encode(['status' => 'error', 'message' => 'Failed to delete the comment.']);
+				}
+			} catch (Exception $e) {
+				$transaction->rollback();
+				echo CJSON::encode(['status' => 'error', 'message' => 'An error occurred while deleting the comment.']);
+			}
+
+			Yii::app()->end();
+		} else {
+			throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+		}
 	}
+
+
+
 
 	/**
 	 * Lists all models.

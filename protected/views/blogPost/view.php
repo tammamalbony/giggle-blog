@@ -21,7 +21,8 @@ $this->breadcrumbs = array(
 	<div style="background-image:url('<?php echo "/";
 	echo isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads";
 	echo "/";
-	echo CHtml::encode($model->cover_image); ?>')" class=" mb-4 cover-image" data-aos="slide-up" data-aos-duration="1500" data-aos-offset="300" data-aos-easing="ease-in-out" alt="Cover Image">
+	echo CHtml::encode($model->cover_image); ?>')" class=" mb-4 cover-image" data-aos="slide-up" data-aos-duration="1500"
+		data-aos-offset="300" data-aos-easing="ease-in-out" alt="Cover Image">
 
 	</div>
 <?php endif; ?>
@@ -65,7 +66,8 @@ $this->breadcrumbs = array(
 					<img src="<?php echo "/";
 					echo isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads";
 					echo "/";
-					echo CHtml::encode($category->icon); ?>" class="img-fluid cat-image" data-aos="slide-up" data-aos-duration="1500" data-aos-offset="300" data-aos-easing="ease-in-out" alt="Category Image">
+					echo CHtml::encode($category->icon); ?>" class="img-fluid cat-image" data-aos="slide-up" data-aos-duration="1500"
+						data-aos-offset="300" data-aos-easing="ease-in-out" alt="Category Image">
 				</a>
 
 			<?php endif; ?>
@@ -110,7 +112,8 @@ $this->breadcrumbs = array(
 					<img src="<?php echo "/";
 					echo isset($_ENV['UPLOAD_DIR']) ? $_ENV['UPLOAD_DIR'] : "uploads";
 					echo "/";
-					echo CHtml::encode($model->image); ?>" class="img-fluid cat-image" data-aos="flip-left" data-aos-duration="1000" data-aos-mirror="true" data-aos-once="false" alt="Post thumbnail">
+					echo CHtml::encode($model->image); ?>" class="img-fluid cat-image" data-aos="flip-left" data-aos-duration="1000"
+						data-aos-mirror="true" data-aos-once="false" alt="Post thumbnail">
 				</a>
 			<?php endif; ?>
 
@@ -163,17 +166,22 @@ $this->breadcrumbs = array(
 													<i class="bi <?php $randomIcon = $icons[array_rand($icons)];
 													echo $randomIcon; ?>"></i>
 												</h5>
-												<p class="card-text comment-contnet-dispaly">
+												<p class="card-text comment-content-display">
 													<?php echo CHtml::encode($comment->content); ?>
 												</p>
 												<p class="card-text">
 													<small
 														class="text-muted"><?php echo CHtml::encode($comment->created_at); ?></small>
 												</p>
+												<?php if ($model->author_id == Yii::app()->user->id): ?>
+													<button class="btn btn-danger delete-comment-btn"
+														data-comment-id="<?php echo $comment->id; ?>">Delete</button>
+												<?php endif ?>
 											</div>
 										</div>
 									</div>
 								<?php endforeach; ?>
+
 							</div>
 							<!-- Add Pagination -->
 							<div class="swiper-pagination"></div>
@@ -181,26 +189,7 @@ $this->breadcrumbs = array(
 							<div class="swiper-button-next"></div>
 							<div class="swiper-button-prev"></div>
 						</div>
-						<script>
-							document.addEventListener('DOMContentLoaded', function () {
-								var swiper = new Swiper('.swiper-container', {
-									loop: true,
-									slidesPerView: 1,
-									spaceBetween: 30,
-									autoplay: {
-										delay: 3000, // 3 seconds
-									},
-									pagination: {
-										el: '.swiper-pagination',
-										clickable: true,
-									},
-									navigation: {
-										nextEl: '.swiper-button-next',
-										prevEl: '.swiper-button-prev',
-									},
-								});
-							});
-						</script>
+
 
 					<?php endif; ?>
 
@@ -316,26 +305,30 @@ $this->breadcrumbs = array(
 												title: 'Comment Added',
 												text: 'Your comment has been added successfully!',
 											}).then(() => {
-												let newCommentSlide = `
-														<div class="swiper-slide">
-															<div class="card mb-3">
-																<div class="card-body">
-																	<h5 class="card-title">${res.comment.author.username}</h5>
-																	<p class="card-text">${res.comment.content}</p>
-																	<p class="card-text">
-																		<small class="text-muted">${res.comment.created_at}</small>
-																	</p>
-																</div>
-															</div>
-														</div>`;
-												let swiper = document.querySelector('.swiper-container').swiper;
-												swiper.appendSlide(newCommentSlide);
-												swiper.update();
-												$('#comment-form')[0].reset();
-												$('#comment-form').removeClass('was-validated');
-												$('#Comment_content').removeClass('is-valid');
-												$('#Comment_content').removeClass('is-invalid');
-												updateWordCounter('');
+												<?php if (!empty($model->comments)) { ?>
+													let newCommentSlide = `
+																									<div class="swiper-slide">
+																										<div class="card mb-3">
+																											<div class="card-body">
+																												<h5 class="card-title">${res.comment.author.username}</h5>
+																												<p class="card-text">${res.comment.content}</p>
+																												<p class="card-text">
+																													<small class="text-muted">${res.comment.created_at}</small>
+																												</p>
+																											</div>
+																										</div>
+																									</div>`;
+													let swiper = document.querySelector('.swiper-container').swiper;
+													swiper.appendSlide(newCommentSlide);
+													swiper.update();
+													$('#comment-form')[0].reset();
+													$('#comment-form').removeClass('was-validated');
+													$('#Comment_content').removeClass('is-valid');
+													$('#Comment_content').removeClass('is-invalid');
+													updateWordCounter('');
+												<?php } else { ?>
+													location.reload();
+												<?php } ?>
 											});
 										} else {
 											Swal.fire({
@@ -395,81 +388,152 @@ $this->breadcrumbs = array(
 
 <script>
 	$('.favBtn').on('click', function (event) {
-			event.preventDefault();
-			var postId = $(this).data('id');
-			var btn = $(this);
+		event.preventDefault();
+		var postId = $(this).data('id');
+		var btn = $(this);
 
-			$.ajax({
-				url: '<?php echo Yii::app()->createUrl("like/toggle"); ?>',
-				type: 'POST',
-				data: { post_id: postId },
-				success: function (response) {
-					response = JSON.parse(response);
-					if (response.success) {
-						btn.toggleClass('btn-outline-primary btn-primary');
-						btn.find('i').toggleClass('bi-hand-thumbs-up bi-hand-thumbs-down');
-						$('.like-count').text(response.likeCount)
-						Swal.fire({
-							icon: 'success',
-							title: 'Success',
-							text: response.message,
-							showConfirmButton: false,
-							timer: 1500
-						});
-					} else {
-						console.log(response.errors);
-						Swal.fire({
-							icon: 'error',
-							title: 'Error',
-							text: response.message,
-						});
-					}
-				},
-				error: function () {
+		$.ajax({
+			url: '<?php echo Yii::app()->createUrl("like/toggle"); ?>',
+			type: 'POST',
+			data: { post_id: postId },
+			success: function (response) {
+				response = JSON.parse(response);
+				if (response.success) {
+					btn.toggleClass('btn-outline-primary btn-primary');
+					btn.find('i').toggleClass('bi-hand-thumbs-up bi-hand-thumbs-down');
+					$('.like-count').text(response.likeCount)
+					Swal.fire({
+						icon: 'success',
+						title: 'Success',
+						text: response.message,
+						showConfirmButton: false,
+						timer: 1500
+					});
+				} else {
+					console.log(response.errors);
 					Swal.fire({
 						icon: 'error',
 						title: 'Error',
-						text: 'An unexpected error occurred. Please try again.',
+						text: response.message,
 					});
 				}
-			});
+			},
+			error: function () {
+				Swal.fire({
+					icon: 'error',
+					title: 'Error',
+					text: 'An unexpected error occurred. Please try again.',
+				});
+			}
 		});
+	});
 
-		$(document).on('change', '.visibility-toggle', function () {
-			var postId = $(this).data('id');
-			var visibility = $(this).is(':checked') ? 1 : 0;
+	$(document).on('change', '.visibility-toggle', function () {
+		var postId = $(this).data('id');
+		var visibility = $(this).is(':checked') ? 1 : 0;
 
-			$.ajax({
-				type: 'POST',
-				url: '<?php echo Yii::app()->createUrl('blogPost/toggleVisibility'); ?>',
-				data: { id: postId, visibility: visibility },
-				success: function (response) {
-					response = JSON.parse(response);
-					if (response.status === 'success') {
-						$('.visibility-status[data-id="' + postId + '"]').text(visibility == 1 ? 'Public' : 'Private');
-						Swal.fire({
-							title: 'Success',
-							text: 'Visibility updated successfully.',
-							icon: 'success',
-							confirmButtonText: 'OK'
-						});
-					} else {
-						Swal.fire({
-							title: 'Error',
-							text: response.message,
-							icon: 'error',
-							confirmButtonText: 'OK'
-						});
-					}
-				},
-				error: function () {
+		$.ajax({
+			type: 'POST',
+			url: '<?php echo Yii::app()->createUrl('blogPost/toggleVisibility'); ?>',
+			data: { id: postId, visibility: visibility },
+			success: function (response) {
+				response = JSON.parse(response);
+				if (response.status === 'success') {
+					$('.visibility-status[data-id="' + postId + '"]').text(visibility == 1 ? 'Public' : 'Private');
+					Swal.fire({
+						title: 'Success',
+						text: 'Visibility updated successfully.',
+						icon: 'success',
+						confirmButtonText: 'OK'
+					});
+				} else {
 					Swal.fire({
 						title: 'Error',
-						text: 'Failed to change visibility',
+						text: response.message,
 						icon: 'error',
 						confirmButtonText: 'OK'
 					});
 				}
+			},
+			error: function () {
+				Swal.fire({
+					title: 'Error',
+					text: 'Failed to change visibility',
+					icon: 'error',
+					confirmButtonText: 'OK'
+				});
+			}
+		});
+	});
+	<?php if ($model->author_id == Yii::app()->user->id && !empty($model->comments)): ?>
+		document.addEventListener('DOMContentLoaded', function () {
+			const swiper = new Swiper('.swiper-container', {
+				loop: true,
+				slidesPerView: 1,
+				spaceBetween: 30,
+				autoplay: {
+					delay: 3000, // 3 seconds
+				},
+				pagination: {
+					el: '.swiper-pagination',
+					clickable: true,
+				},
+				navigation: {
+					nextEl: '.swiper-button-next',
+					prevEl: '.swiper-button-prev',
+				},
+			});
+			document.querySelectorAll('.delete-comment-btn').forEach(function (button) {
+
+				button.addEventListener('click', function () {
+					var commentId = this.getAttribute('data-comment-id');
+					var slide = this.closest('.swiper-slide');
+					var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content'); // Assuming CSRF token is stored in a meta tag
+
+					Swal.fire({
+						title: 'Are you sure?',
+						text: "You won't be able to revert this!",
+						icon: 'warning',
+						showCancelButton: true,
+						confirmButtonText: 'Yes, delete it!',
+						cancelButtonText: 'No, cancel!',
+					}).then((result) => {
+						if (result.isConfirmed) {
+							$.ajax({
+								url: '<?php echo Yii::app()->createUrl("comment/delete", array("id" => "")); ?>' + '/' + commentId,
+								type: 'POST',
+								data: { YII_CSRF_TOKEN: csrfToken },
+								success: function (response) {
+									var res = JSON.parse(response);
+									if (res.status === 'success') {
+										Swal.fire(
+											'Deleted!',
+											'The comment has been deleted.',
+											'success'
+										);
+										location.reload();
+									} else {
+										Swal.fire(
+											'Error!',
+											res.message,
+											'error'
+										);
+									}
+								},
+								error: function () {
+									Swal.fire(
+										'Error!',
+										'There was an error deleting the comment.',
+										'error'
+									);
+								}
+							});
+						}
+					});
+				});
 			});
 		});
+
+
+	<?php endif ?>
 </script>
