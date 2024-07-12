@@ -28,7 +28,7 @@ class UserController extends Controller
 	{
 		return array(
 			array('allow', 'actions' => array('index', 'view', 'register', 'signUp', 'verify', 'ajaxEmailCheck', 'ajaxUsernameCheck'), 'users' => array('*')),
-			array('allow', 'actions' => array('create', 'update', 'verification', 'resendVerification'), 'users' => array('@')),
+			array('allow', 'actions' => array('create', 'update', 'verification', 'resendVerification','verifyNow'), 'users' => array('@')),
 			array('allow', 'actions' => array('admin', 'delete'), 'users' => array('admin')),
 			array('deny', 'users' => array('*')),
 		);
@@ -214,7 +214,25 @@ class UserController extends Controller
 	{
 		$this->render('verification');
 	}
-
+	public function actionVerifyNow($id)
+	{
+		$user = User::model()->findByPk($id);
+		if ($user && !$user->is_verified) {
+			$user->is_verified = 1;
+			$user->verification_token = null;
+			if ($user->save(false)) {
+				Yii::app()->user->setFlash('success', 'Your account has been verified.');
+				Yii::app()->user->setState('isVerified', true);
+				$this->redirect(array('site/index'));
+			} else {
+				Yii::app()->user->setFlash('error', 'Failed to verify your account.');
+				$this->redirect(array('user/verification'));
+			}
+		} else {
+			Yii::app()->user->setFlash('error', 'Invalid user or account already verified.');
+			$this->redirect(array('user/verification'));
+		}
+	}
 	public function actionResendVerification()
 	{
 		$user = User::model()->findByPk(Yii::app()->user->id);
@@ -223,10 +241,14 @@ class UserController extends Controller
 			if ($user->save(false)) {
 				$verificationUrl = Yii::app()->createAbsoluteUrl('user/verify', ['token' => $user->verification_token]);
 				$body = "Please click on the following link to verify your account: <a href='{$verificationUrl}'>Verify Account</a>";
-				if (Yii::app()->mail->sendMail($user->email, 'Verify Your Account', $body)) {
-					Yii::app()->user->setFlash('success', 'A new verification email has been sent to your email address.');
-				} else {
-					Yii::app()->user->setFlash('error', 'Error while sending verification email.');
+				if(isset($_ENV['IS_EMAIL_ENABEL']) && $_ENV['IS_EMAIL_ENABEL'] == "TRUE"){
+					Yii::app()->user->setFlash('success', 'A new verification email has been mocked up.');
+				}else{
+					if (Yii::app()->mail->sendMail($user->email, 'Verify Your Account', $body)) {
+						Yii::app()->user->setFlash('success', 'A new verification email has been sent to your email address.');
+					} else {
+						Yii::app()->user->setFlash('error', 'Error while sending verification email.');
+					}
 				}
 			} else {
 				Yii::app()->user->setFlash('error', 'Error while generating new verification token.');
