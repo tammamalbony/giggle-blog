@@ -7,7 +7,7 @@
 	<meta name="language" content="en">
 	<meta charset="utf-8">
 	<meta content="width=device-width, initial-scale=1.0" name="viewport">
-
+	<meta name="csrf-token" content="<?php echo Yii::app()->request->csrfToken; ?>">
 	<meta name="description" content="Giggle and Post Website" />
 	<meta property="og:title" content="Giggle Website" />
 	<meta property="og:url" content="https://www.Glitch-it.net/" />
