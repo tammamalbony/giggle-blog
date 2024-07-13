@@ -64,8 +64,34 @@ Refer to the `files and directories structure.txt` for a detailed structure. Her
     php create_database.php
     ./protected/yiic migrate
     ```
+    The Demo data is included : (users)
+       ```bash
+   
+    ```
+    > [!NOTE]
+> Useful information that users should know, .
 
-5. **Set up your app to run **:
+> [!TIP]
+> verified user with private post
+> email : Wafaabufaour1@gmail.com
+> password : Wafaabufaour1@gmail.com
+
+> [!IMPORTANT]
+> verified user
+> email : Wafaabufaour2@gmail.com
+> password : Wafaabufaour2@gmail.com
+
+> [!WARNING]
+> not verified user with private post
+> email : Wafaabufaour1@gmail.com
+> password : Wafaabufaour1@gmail.com
+
+> [!CAUTION]
+> each user has an access to specific features based on his account status
+![image](https://github.com/user-attachments/assets/a1c57602-14c7-48fb-bf68-1da75707e0e4)
+
+
+6. **Set up your app to run **:
     ```bash
     cd protected
     composer install
