@@ -70,17 +70,17 @@ Refer to the `files and directories structure.txt` for a detailed structure. Her
 
 > [!TIP]
 > verified user with private post
-> email : Wafaabufaour1@gmail.com
+> username : wafaaf1
 > password : Wafaabufaour1@gmail.com
 
 > [!IMPORTANT]
 > verified user
-> email : Wafaabufaour2@gmail.com
+> username : wafaaf2
 > password : Wafaabufaour2@gmail.com
 
 > [!WARNING]
 > not verified user with private post
-> email : Wafaabufaour1@gmail.com
+> username : wafaaf3
 > password : Wafaabufaour1@gmail.com
 
 > [!CAUTION]
