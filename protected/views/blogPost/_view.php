@@ -80,7 +80,7 @@
                     <div class="clickable-card"
                         data-link="<?php echo $this->createUrl('view', array('id' => $data->id)); ?>">
                         <strong>Likes:
-                            <span id="like-count" class="purecounter" data-purecounter-start="0"
+                            <span id="like-count" class="purecounter like-count" data-purecounter-start="0"
                                 data-purecounter-end="<?php echo CHtml::encode($data->getLikeCount()); ?>"
                                 data-purecounter-duration="2"
                                 data-actual-count="<?php echo CHtml::encode($data->getLikeCount()); ?>"><?php echo CHtml::encode($data->getLikeCount()); ?></span>
