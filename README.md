@@ -64,12 +64,9 @@ Refer to the `files and directories structure.txt` for a detailed structure. Her
     php create_database.php
     ./protected/yiic migrate
     ```
-    The Demo data is included : (users)
-       ```bash
-   
-    ```
+      
     > [!NOTE]
-> Useful information that users should know, .
+> The Demo data is included : (users)
 
 > [!TIP]
 > verified user with private post
