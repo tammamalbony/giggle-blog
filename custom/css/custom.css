@@ -795,4 +795,26 @@ svg text {
   input:checked + .slider:before {
     transform: translateX(14px);
   }
+  /*--------------------------------------------------------------
+# scrollbar
+--------------------------------------------------------------*/
+::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #FDF2ED;
+    border-radius: 0px;
+    box-shadow: 0 0 10px rgb(98 86 117 / 50%);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #8aed50;
+    border-radius: 5px;
+  
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #31f81f;
+  }
   
