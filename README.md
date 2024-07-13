@@ -24,6 +24,7 @@ Giggle is a simple CRUD Blog web application built using Yii v1.1 and MySQL for 
 - **Frontend**: HTML, CSS, JavaScript, Bootstrap
 - **Authentication**: Yii’s built-in user authentication mechanism.
 - **AJAX**: Used for real-time search and updates.
+  >WebSockets are resource-intensive and complex to maintain, requiring sophisticated server infrastructure. Interval-based polling is simpler to implement, universally compatible, and easier to scale.
 
 ### Project Structure
 Refer to the `files and directories structure.txt` for a detailed structure. Here is a brief overview:
